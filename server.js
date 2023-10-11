@@ -4,6 +4,11 @@ const cors = require("cors");
 
 const itemsModel = require("./models/itemsCollection");
 const PricingModel = require("./models/priceCollection");
+const EurofitModel = require("./models/eurofitCollection");
+const flatRateModel = require("./models/flatRateCollection");
+const InfoModel = require("./models/infoCollection");
+const mediaModel = require("./models/mediaCollection");
+const promoItemModel = require("./models/promoCollection");
 
 DATABASE_PASSWORD = "DkD0ml96WSM62TAn";
 DATABASE = `mongodb+srv://seanhaugen560:${DATABASE_PASSWORD}@cluster0.adhrbht.mongodb.net/products?retryWrites=true&w=majority`;
@@ -153,6 +158,93 @@ app.get("/pricing/:criteria/:item", async (req, res) => {
     res.json(pricingArrays);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+//Get Internal Information
+app.get("/info", async (req, res) => {
+  try {
+    const itemInfo = req.query.item;
+    const info = await InfoModel.findOne({
+      Item_Number: itemInfo.trim(),
+    });
+    console.log(info);
+
+    if (!info) {
+      return res.status(404).json({ message: "Internal Info not found" });
+    }
+
+    res.json(info);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+//get flatrates
+app.get("/flatRates/:item", async (req, res) => {
+  try {
+    const flatRateItem = req.params.item;
+    const rateInfo = await flatRateModel.find({
+      Item_Number: flatRateItem,
+      Service: { $in: ["GROUND SERVICE", "2DAY", "STANDARD OVERNIGHT"] },
+    });
+    console.log(rateInfo);
+    if (rateInfo.length === 0) {
+      return res.status(404).json({ message: "Internal Info not found" });
+    }
+    res.json(rateInfo);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+//get Eurofit info
+app.get("/eurofits", async (req, res) => {
+  try {
+    const itemNumber = parseInt(req.query.item);
+
+    if (isNaN(itemNumber)) {
+      return res.status(400).json({ message: "Invalid Item_Number provided" });
+    }
+
+    const info = await EurofitModel.findOne({
+      Item_Number: itemNumber,
+    });
+
+    if (!info) {
+      return res.status(404).json({ message: "Eurofit Info not found!" });
+    }
+
+    console.log("Query:", info);
+
+    res.json(info);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+//get media info Specifications
+app.get("/mediaspecs", async (req, res) => {
+  try {
+    const media = req.query.item;
+    const mediaInfo = await mediaModel.find({
+      Type: media,
+    });
+    console.log(mediaInfo);
+    res.json(mediaInfo);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.get("/promoitems", async (req, res) => {
+  try {
+    const promoItems = await promoItemModel.find({}); // Find all items in the collection
+
+    res.json(promoItems);
+  } catch (error) {
+    console.error("Error fetching promo items:", error); // Log the error for debugging
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
