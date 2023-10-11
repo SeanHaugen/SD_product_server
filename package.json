@@ -1,0 +1,12 @@
+{
+  "name": "serverproject",
+  "version": "1.0.0",
+  "description": "server for catalog database",
+  "main": "server.js",
+  "scripts": {
+    "test": "test",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
