@@ -30,6 +30,6 @@ const promoItemSchema = new mongoose.Schema({
 });
 
 // Create a model based on the schema
-const promoItemModel = mongoose.model("promos", promoItemSchema);
+const promoItemModel = mongoose.model("promoitems", promoItemSchema);
 
 module.exports = promoItemModel;
