@@ -312,7 +312,7 @@ app.put("/update/pricing/:itemNumber", async (req, res) => {
   }
 });
 
-//POST request
+//POST/PUT request for adding new information
 
 app.post("/additionalInfo/:item", async (req, res) => {
   try {
@@ -347,6 +347,42 @@ app.post("/additionalInfo/:item", async (req, res) => {
       .json({ message: "could not add document", error: error.message });
   }
 });
+
+app.put("/additionalInfoEdit/:item", async (req, res) => {
+  try {
+    const itemNumber = req.params.item;
+    const newAdditionalInfo = req.body.additional_info;
+
+    const item = await itemsModel.findOne({ Item_Number: itemNumber });
+
+    console.log("Item Number:", itemNumber);
+    console.log("New Additional Info:", newAdditionalInfo);
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    // Check if "additional_info" field exists in the item
+    if (!item.additional_info) {
+      // If it doesn't exist, create the field with the new value
+      item.additional_info = newAdditionalInfo;
+    } else {
+      // If it exists, append the new value to the existing value
+      item.additional_info += "\n" + newAdditionalInfo; // You can choose a delimiter, like a newline, to separate values
+    }
+
+    // Save the updated document
+    await item.save();
+    res.status(200).json({ message: "Additional info updated successfully" });
+  } catch (error) {
+    console.error("Error adding document", error);
+    res
+      .status(500)
+      .json({ message: "Could not add document", error: error.message });
+  }
+});
+
+/////////////////////////////////////////
 
 app.post("/add/promo-items", async (req, res) => {
   try {
