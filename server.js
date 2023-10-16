@@ -293,24 +293,53 @@ app.put("/update/:itemNumber", async (req, res) => {
 
 app.put("/update/pricing/:itemNumber", async (req, res) => {
   try {
-    const priceToUpdate = req.params.itemNumber;
-    const elementToUpdate = req.body.elementToUpdate;
+    const itemNumber = req.params.itemNumber;
+    const elementIndex = req.body.elementIndex; // The index of the element you want to update
+    const updatedElement = req.body.updatedElement; // The new element data
 
-    await PricingModel.updateOne(
-      { Item_Number: priceToUpdate, Pricing: { $elemMatch: elementToUpdate } },
-      {
-        $set: {
-          "Pricing.$": elementToUpdate,
-        },
-      }
-    );
+    const filter = { Item_Number: itemNumber };
+    const update = {
+      $set: {
+        [`Pricing.${elementIndex}`]: updatedElement,
+      },
+    };
 
+    await PricingModel.updateOne(filter, update);
+    console.log("pricing updated successfully");
     res.sendStatus(200);
   } catch (error) {
     console.error("Error updating item", error);
-    res.status(500).json({ message: "Could not update item", error });
+    res
+      .status(500)
+      .json({ message: "Could not update item", error: error.message });
   }
 });
+
+// app.put("/update/promopricing/:itemNumber", async (req, res) => {
+//   try {
+//     const itemNumber = req.params.itemNumber;
+//     const elementIndex = req.body.elementIndex; // The index of the element you want to update
+//     const updatedElement = req.body.updatedElement; // The new element data
+//     const isPromo = req.body.isPromo; // Added field for Promo
+
+//     const filter = { Item_Number: itemNumber };
+//     const update = {
+//       $set: {
+//         [`Pricing.${elementIndex}`]: updatedElement,
+//         Promo: isPromo, // Set the Promo field
+//       },
+//     };
+
+//     await PricingModel.updateOne(filter, update);
+
+//     res.sendStatus(200);
+//   } catch (error) {
+//     console.error("Error updating item", error);
+//     res
+//       .status(500)
+//       .json({ message: "Could not update item", error: error.message });
+//   }
+// });
 
 app.post("/add/promo-items", async (req, res) => {
   try {
