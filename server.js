@@ -321,6 +321,9 @@ app.post("/additionalInfo/:item", async (req, res) => {
 
     const item = await itemsModel.findOne({ Item_Number: itemNumber });
 
+    console.log("Item Number:", itemNumber);
+    console.log("New Additional Info:", newAdditionalInfo);
+
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
     }
