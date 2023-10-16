@@ -233,15 +233,6 @@ app.get("/mediaspecs", async (req, res) => {
 });
 
 app.get("/promo-items", async (req, res) => {
-  //   try {
-  //     const promoItems = await promoItemModel.find({}); // Find all items in the collection
-
-  //     res.json(promoItems);
-  //   } catch (error) {
-  //     console.error("Error fetching promo items:", error); // Log the error for debugging
-  //     res.status(500).json({ message: "Internal server error" });
-  //   }
-
   try {
     const promoItems = await promoItemModel.find({});
     console.log(promoItems); // Add this line to log the results
@@ -251,6 +242,8 @@ app.get("/promo-items", async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
+
+//PUT request
 
 app.put("/update/:itemNumber", async (req, res) => {
   console.log("Received PUT request:", req.body);
@@ -306,7 +299,7 @@ app.put("/update/pricing/:itemNumber", async (req, res) => {
         [`Pricing.${outerIndex}.${innerIndex}`]: updatedElement,
       },
     };
-    console.log(filter, update);
+
     await PricingModel.updateOne(filter, update);
     console.log("pricing updated successfully");
     res.sendStatus(200);
@@ -318,31 +311,25 @@ app.put("/update/pricing/:itemNumber", async (req, res) => {
   }
 });
 
-// app.put("/update/promopricing/:itemNumber", async (req, res) => {
-//   try {
-//     const itemNumber = req.params.itemNumber;
-//     const elementIndex = req.body.elementIndex; // The index of the element you want to update
-//     const updatedElement = req.body.updatedElement; // The new element data
-//     const isPromo = req.body.isPromo; // Added field for Promo
+//POST request
 
-//     const filter = { Item_Number: itemNumber };
-//     const update = {
-//       $set: {
-//         [`Pricing.${elementIndex}`]: updatedElement,
-//         Promo: isPromo, // Set the Promo field
-//       },
-//     };
+app.post("/additionalInfo/:item", async (req, res) => {
+  try {
+    const itemNumber = req.params.item;
+    const newAdditionalInfo = req.body;
 
-//     await PricingModel.updateOne(filter, update);
-
-//     res.sendStatus(200);
-//   } catch (error) {
-//     console.error("Error updating item", error);
-//     res
-//       .status(500)
-//       .json({ message: "Could not update item", error: error.message });
-//   }
-// });
+    const newDocument = new additionalInfoModel({
+      item: itemNumber,
+      additionalInfo: newAdditionalInfo, // Corrected the property name
+    });
+    newDocument.save();
+  } catch (error) {
+    console.error("error adding document", error);
+    res
+      .status(500)
+      .json({ message: "could not add document", error: error.message });
+  }
+});
 
 app.post("/add/promo-items", async (req, res) => {
   try {
