@@ -9,7 +9,7 @@ const flatRateModel = require("./models/flatRateCollection");
 const InfoModel = require("./models/infoCollection");
 const mediaModel = require("./models/mediaCollection");
 const promoItemModel = require("./models/promoCollection");
-const additionalInfoModel = require("./models/additionalInfoCollection");
+const additionalInfoModel = require("./models/addtionalInfoCollection");
 
 DATABASE_PASSWORD = "DkD0ml96WSM62TAn";
 DATABASE = `mongodb+srv://seanhaugen560:${DATABASE_PASSWORD}@cluster0.adhrbht.mongodb.net/products?retryWrites=true&w=majority`;
