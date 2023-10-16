@@ -317,13 +317,26 @@ app.put("/update/pricing/:itemNumber", async (req, res) => {
 app.post("/additionalInfo/:item", async (req, res) => {
   try {
     const itemNumber = req.params.item;
-    const newAdditionalInfo = req.body;
+    const newAdditionalInfo = req.body.additional_info;
 
-    const newDocument = new additionalInfoModel({
-      item: itemNumber,
-      additionalInfo: newAdditionalInfo, // Corrected the property name
-    });
-    newDocument.save();
+    const item = await itemsModel.findOne({ Item_Number: itemNumber });
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    // Check if "additional_info" field exists in the item
+    if (!item.additional_info) {
+      // If it doesn't exist, create the field
+      item.additional_info = newAdditionalInfo;
+    } else {
+      // If it exists, update the value
+      item.additional_info = newAdditionalInfo;
+    }
+
+    // Save the updated document
+    await item.save();
+    res.status(200).json({ message: "Additional info updated successfully" });
   } catch (error) {
     console.error("error adding document", error);
     res
