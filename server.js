@@ -297,13 +297,13 @@ app.put("/update/pricing/:itemNumber", async (req, res) => {
     // const elementIndex = req.body.elementIndex; // The index of the element you want to update
     // const updatedElement = req.body.updatedElement; // The new element data
     const outerIndex = req.body.outerIndex; // The index of the outer array
-    // const innerIndex = req.body.innerIndex; // The index of the inner sub-array
+    const innerIndex = req.body.innerIndex; // The index of the inner sub-array
     const updatedElement = req.body.updatedElement;
 
     const filter = { Item_Number: itemNumber };
     const update = {
       $set: {
-        [`Pricing.${outerIndex}`]: updatedElement,
+        [`Pricing.${outerIndex}.${innerIndex}`]: updatedElement,
       },
     };
     console.log(filter, update);
