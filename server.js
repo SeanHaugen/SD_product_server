@@ -294,16 +294,19 @@ app.put("/update/:itemNumber", async (req, res) => {
 app.put("/update/pricing/:itemNumber", async (req, res) => {
   try {
     const itemNumber = req.params.itemNumber;
-    const elementIndex = req.body.elementIndex; // The index of the element you want to update
-    const updatedElement = req.body.updatedElement; // The new element data
+    // const elementIndex = req.body.elementIndex; // The index of the element you want to update
+    // const updatedElement = req.body.updatedElement; // The new element data
+    const outerIndex = req.body.outerIndex; // The index of the outer array
+    const innerIndex = req.body.innerIndex; // The index of the inner sub-array
+    const updatedElement = req.body.updatedElement;
 
     const filter = { Item_Number: itemNumber };
     const update = {
       $set: {
-        [`Pricing.${elementIndex}`]: updatedElement,
+        [`Pricing.${outerIndex}.${innerIndex}`]: updatedElement,
       },
     };
-
+    console.log(filter, update);
     await PricingModel.updateOne(filter, update);
     console.log("pricing updated successfully");
     res.sendStatus(200);
