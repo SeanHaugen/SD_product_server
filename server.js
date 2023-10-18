@@ -257,11 +257,6 @@ app.put("/update/:itemNumber", async (req, res) => {
     if (!itemToUpdate) {
       return res.status(404).json({ message: "Item not found" });
     }
-
-    // if ("Name" in req.body) itemToUpdate.Name = req.body.Name;
-    // if ("Category" in req.body) itemToUpdate.Category = req.body.Category;
-    // if ("SubCategory" in req.body)
-    //   itemToUpdate.SubCategory = req.body.SubCategory;
     if ("Description" in req.body)
       itemToUpdate.Description += " " + req.body.Description;
     if ("Materials" in req.body)
@@ -339,7 +334,7 @@ app.post("/additionalInfo/:item", async (req, res) => {
 
     // Save the updated document
     await item.save();
-    res.status(200).json({ message: "Additional info updated successfully" });
+    res.status(200).json({ message: "Additional info added successfully" });
   } catch (error) {
     console.error("error adding document", error);
     res
@@ -379,6 +374,54 @@ app.put("/additionalInfoEdit/:item", async (req, res) => {
     res
       .status(500)
       .json({ message: "Could not add document", error: error.message });
+  }
+});
+
+app.delete("/removeAdditionalInfo/:item", async (req, res) => {
+  try {
+    const itemNumber = req.params.item;
+    const deleteIndex = req.query.index; // Query parameter to specify which piece of info to delete
+
+    const item = await itemsModel.findOne({ Item_Number: itemNumber });
+
+    console.log("Item Number:", itemNumber);
+    console.log("Delete Index:", deleteIndex);
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    if (!item.additional_info) {
+      return res.status(400).json({ message: "No additional info to delete" });
+    }
+
+    // Split the additional info by a delimiter (e.g., newline) to create an array
+    const additionalInfoArray = item.additional_info.split("\n");
+
+    if (deleteIndex === undefined) {
+      // If no index is specified, delete all additional info
+      item.additional_info = null;
+    } else {
+      // Check if the specified index is valid
+      if (deleteIndex >= 0 && deleteIndex < additionalInfoArray.length) {
+        // Remove the specified piece of info by its index
+        additionalInfoArray.splice(deleteIndex, 1);
+        // Join the remaining info back into a string
+        item.additional_info = additionalInfoArray.join("\n");
+      } else {
+        return res.status(400).json({ message: "Invalid index specified" });
+      }
+    }
+
+    // Save the updated document
+    await item.save();
+    res.status(200).json({ message: "Additional info deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting additional info", error);
+    res.status(500).json({
+      message: "Could not delete additional info",
+      error: error.message,
+    });
   }
 });
 
