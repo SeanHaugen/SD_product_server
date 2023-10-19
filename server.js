@@ -244,6 +244,24 @@ app.get("/promo-items", async (req, res) => {
   }
 });
 
+//Get similar products from items collection
+
+app.get("/document/:name", async (req, res) => {
+  try {
+    const paramName = req.params.name;
+
+    // Use Mongoose to update documents
+    await itemsModel.updateMany(
+      {}, // Match all documents
+      { $set: { name: paramName } }
+    );
+
+    res.json({ message: `Updated all documents with name: ${paramName}` });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 //PUT request
 
 app.put("/update/:itemNumber", async (req, res) => {
@@ -424,6 +442,8 @@ app.delete("/removeAdditionalInfo/:item", async (req, res) => {
     });
   }
 });
+
+/////////////////////////////////////////
 
 /////////////////////////////////////////
 
