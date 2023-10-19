@@ -250,13 +250,12 @@ app.get("/document/:name", async (req, res) => {
   try {
     const paramName = req.params.name;
 
-    // Use Mongoose to update documents
-    await itemsModel.updateMany(
-      {}, // Match all documents
-      { $set: { name: paramName } }
-    );
+    // Use Mongoose to find documents with similar names
+    const documents = await Document.find({
+      name: { $regex: paramName, $options: "i" }, // Case-insensitive regex search
+    });
 
-    res.json({ message: `Updated all documents with name: ${paramName}` });
+    res.json({ documents });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
