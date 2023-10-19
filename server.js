@@ -246,13 +246,13 @@ app.get("/promo-items", async (req, res) => {
 
 //Get similar products from items collection
 
-app.get("/document/:name", async (req, res) => {
+app.get("/document/:pattern", async (req, res) => {
   try {
-    const paramName = req.params.name;
+    const paramPattern = req.params.pattern;
 
-    // Use Mongoose to find documents with similar names
+    // Use Mongoose to find documents with names matching the provided pattern
     const documents = await Document.find({
-      name: { $regex: paramName, $options: "i" }, // Case-insensitive regex search
+      name: { $regex: paramPattern, $options: "i" }, // Case-insensitive regex search
     });
 
     res.json({ documents });
