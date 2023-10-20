@@ -487,7 +487,7 @@ app.post("/add", async (req, res) => {
       return res.status(400).json({ message: "Required fields missing" });
     }
 
-    const newItem = new items({
+    const newItem = new itemsModel({
       Item_Number,
       Name,
       Description,
