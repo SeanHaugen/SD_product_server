@@ -10,6 +10,7 @@ const InfoModel = require("./models/infoCollection");
 const mediaModel = require("./models/mediaCollection");
 const promoItemModel = require("./models/promoCollection");
 const additionalInfoModel = require("./models/addtionalInfoCollection");
+const UserModel = require("./models/userCollection");
 
 DATABASE_PASSWORD = "DkD0ml96WSM62TAn";
 DATABASE = `mongodb+srv://seanhaugen560:${DATABASE_PASSWORD}@cluster0.adhrbht.mongodb.net/products?retryWrites=true&w=majority`;
@@ -282,8 +283,6 @@ app.put("/update/:itemNumber", async (req, res) => {
       itemToUpdate.Package_Weight += " " + req.body.Package_Weight;
     if ("Imprint_Method" in req.body)
       itemToUpdate.Imprint_Method += " " + req.body.Imprint_Method;
-    if ("Imprint_Method" in req.body)
-      itemToUpdate.Imprint_Method += " " + req.body.Imprint_Method;
 
     await itemToUpdate.save();
 
@@ -443,6 +442,69 @@ app.delete("/removeAdditionalInfo/:item", async (req, res) => {
 });
 
 /////////////////////////////////////////
+//Put requests for details
+
+/////////////////////////////////////////
+//user authentication
+app.post("/register", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    // Validate user data (you can add more validation)
+    if (!username || !password) {
+      return res
+        .status(400)
+        .json({ error: "Please provide all required fields." });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user in the database
+    const user = new UserModel({ username, password: hashedPassword });
+    await user.save();
+
+    return res.status(201).json({ message: "User registered successfully." });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Registration failed. Please try again later." });
+  }
+});
+
+const jwt = require("jsonwebtoken");
+const secretKey = "JE24jSrXzlnemqfn"; // Replace with your secret key
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials." });
+    }
+
+    // Compare the hashed password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid credentials." });
+    }
+
+    // Generate a JWT
+    const token = jwt.sign({ userId: user._id }, secretKey, {
+      expiresIn: "1h",
+    });
+
+    return res.json({ token });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Login failed. Please try again later." });
+  }
+});
 
 /////////////////////////////////////////
 
