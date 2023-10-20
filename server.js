@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 
 const itemsModel = require("./models/itemsCollection");
 const PricingModel = require("./models/priceCollection");
@@ -472,7 +473,6 @@ app.post("/register", async (req, res) => {
   }
 });
 
-const jwt = require("jsonwebtoken");
 const secretKey = "JE24jSrXzlnemqfn"; // Replace with your secret key
 
 app.post("/login", async (req, res) => {
