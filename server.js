@@ -449,6 +449,7 @@ app.delete("/removeAdditionalInfo/:item", async (req, res) => {
 //user authentication
 app.post("/register", async (req, res) => {
   try {
+    console.log("Received a registration request");
     const { username, password } = req.body;
 
     // Validate user data (you can add more validation)
