@@ -461,8 +461,26 @@ app.post("/add/promo-items", async (req, res) => {
 
 app.post("/add", async (req, res) => {
   try {
-    const { Item_Number, Name, Description, Keywords, Category, SubCategory } =
-      req.body;
+    const {
+      Item_Number,
+      Name,
+      Description,
+      Keywords,
+      Category,
+      SubCategory,
+      Colors,
+      Product_Width_inches,
+      Product_Height_Inches,
+      Produce_Depth_Inches,
+      Artwork_Required,
+      Package_Size,
+      Package_Weight,
+      Product_Weight,
+      Kit_Includes,
+      Materials,
+      Imprint_Method,
+      Origin,
+    } = req.body;
 
     // Validate input data (you can add more validation logic here)
     if (!Item_Number || !Name || !Category) {
