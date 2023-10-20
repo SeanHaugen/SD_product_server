@@ -482,7 +482,7 @@ app.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     // Find the user by email
-    const user = await User.findOne({ email });
+    const user = await UserModel.findOne({ email });
 
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials." });
