@@ -522,6 +522,7 @@ app.post("/pricingAdd", async (req, res) => {
   try {
     console.log("Received request body:", req.body);
     const { Item_Number, Name, Pricing } = req.body;
+
     // Check if an item with the given Item_Number already exists
     let existingItem = await PricingModel.findOne({ Item_Number });
 
@@ -529,14 +530,19 @@ app.post("/pricingAdd", async (req, res) => {
       return res.status(400).json({ message: "Item already exists" });
     }
 
+    // Flatten the Pricing data into the desired format
+    const flattenedPricing = [];
+    Pricing.forEach((entry) => {
+      const priceArray = [entry.label];
+      priceArray.push(...entry.prices);
+      flattenedPricing.push(priceArray);
+    });
+
     // Create a new item document
     const newItem = new PricingModel({
       Item_Number,
       Name,
-      Pricing: Pricing.map((entry) => ({
-        label: entry.label,
-        prices: entry.prices,
-      })),
+      Pricing: flattenedPricing,
     });
 
     // Save the new item to the database
