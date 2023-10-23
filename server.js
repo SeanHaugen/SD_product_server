@@ -457,7 +457,7 @@ app.post("/add-oos/:itemnum", async (req, res) => {
     console.log("Item Number:", itemId);
 
     // Update the document by the Item_Number to add the "OOS" field
-    const result = await itemsModel.updateOne(
+    const result = await itemsModel.findOne(
       { Item_Number: itemId },
       { $set: { OOS: true } }
     );
