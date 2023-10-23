@@ -449,20 +449,22 @@ app.delete("/removeAdditionalInfo/:item", async (req, res) => {
 ////////////////////////////////////////
 //requests for OOS/low inventory
 
-app.post("/add-oos/:itemId", async (req, res) => {
+app.post("/toggle-oos/:itemId", async (req, res) => {
   try {
     const itemId = req.params.itemId;
 
-    // Find the document by the Item_Number and update the "OOS" field
-    const updatedItem = await itemsModel.findOneAndUpdate(
-      { Item_Number: itemId },
-      { OOS: true },
-      { new: true }
-    );
+    // Find the document by the Item_Number
+    const item = await itemsModel.findOne({ Item_Number: itemId });
 
-    if (!updatedItem) {
+    if (!item) {
       return res.status(404).json({ message: "Item not found" });
     }
+
+    // Toggle the "OOS" field
+    item.OOS = !item.OOS;
+
+    // Save the updated document
+    const updatedItem = await item.save();
 
     return res.status(200).json(updatedItem);
   } catch (error) {
