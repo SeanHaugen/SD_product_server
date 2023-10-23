@@ -453,10 +453,11 @@ app.post("/toggle-oos/:itemId", async (req, res) => {
   try {
     const itemId = req.params.itemId;
 
+    // Debugging: Log the itemId to see if it's correct
+    console.log("Item ID:", itemId);
+
     // Find the document by the Item_Number
     const item = await itemsModel.findOne({ Item_Number: itemId });
-
-    console.log(itemId);
 
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
@@ -464,6 +465,9 @@ app.post("/toggle-oos/:itemId", async (req, res) => {
 
     // Toggle the "OOS" field
     item.OOS = !item.OOS;
+
+    // Debugging: Log the updated item
+    console.log("Updated Item:", item);
 
     // Save the updated document
     const updatedItem = await item.save();
