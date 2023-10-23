@@ -451,25 +451,23 @@ app.delete("/removeAdditionalInfo/:item", async (req, res) => {
 
 app.post("/add-oos/:item_number", async (req, res) => {
   try {
-    const itemNumber = req.params.item_number;
+    const itemNumber = parseInt(req.params.item_number);
+    const isOutOfStock = req.body.OOS;
 
-    // Debugging: Log the itemId to see if it's correct
-    console.log("Item Number:", itemNumber);
+    // Create a new item document with the "OOS" field
+    const newItem = new itemsModel({
+      Item_Number: itemNumber,
+      OOS: isOutOfStock,
+    });
 
-    // Update the document by the Item_Number to add the "OOS" field
-    const result = await itemsModel.findOne(
-      { Item_Number: itemNumber },
-      { $set: { OOS: true } }
-    );
+    // Save the new item to the database
+    const savedItem = await newItem.save();
 
-    // if (result.nModified === 0) {
-    //   return res.status(404).json({ message: "Item not found" });
-    // }
-
-    return res.status(200).json({ message: "OOS field added successfully" });
+    return res.status(201).json(savedItem);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
 });
 
