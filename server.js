@@ -521,12 +521,12 @@ app.post("/add-lowStock/:item_number", async (req, res) => {
     }
 
     // Check if "OOS" field exists in the item
-    if (!item.OOS) {
+    if (!item.Low_Stock) {
       // If it doesn't exist, create the field
-      item.OOS = isLowOnStock;
+      item.Low_Stock = isLowOnStock;
     } else {
       // If it exists, update the value
-      item.OOS = isLowOnStock;
+      item.Low_Stock = isLowOnStock;
     }
 
     // Save the updated document
