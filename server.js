@@ -449,12 +449,36 @@ app.delete("/removeAdditionalInfo/:item", async (req, res) => {
 ////////////////////////////////////////
 //requests for OOS/low inventory
 
-app.post("/toggle-oos/:itemId", async (req, res) => {
+app.post("/add-oos/:itemnum", async (req, res) => {
   try {
-    const itemId = req.params.itemId;
+    const itemId = req.params.itemnum;
 
     // Debugging: Log the itemId to see if it's correct
-    console.log("Item ID:", itemId);
+    console.log("Item Number:", itemId);
+
+    // Update the document by the Item_Number to add the "OOS" field
+    const result = await itemsModel.updateOne(
+      { Item_Number: itemId },
+      { $set: { OOS: true } }
+    );
+
+    if (result.nModified === 0) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    return res.status(200).json({ message: "OOS field added successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+app.put("/toggle-oos/:itemnum", async (req, res) => {
+  try {
+    const itemId = req.params.itemnum;
+
+    // Debugging: Log the itemId to see if it's correct
+    console.log("Item Number:", itemId);
 
     // Find the document by the Item_Number
     const item = await itemsModel.findOne({ Item_Number: itemId });
@@ -463,11 +487,8 @@ app.post("/toggle-oos/:itemId", async (req, res) => {
       return res.status(404).json({ message: "Item not found" });
     }
 
-    // Toggle the "OOS" field
+    // Toggle the existing "OOS" field
     item.OOS = !item.OOS;
-
-    // Debugging: Log the updated item
-    console.log("Updated Item:", item);
 
     // Save the updated document
     const updatedItem = await item.save();
