@@ -484,12 +484,9 @@ app.post("/add-oos/:item_number", async (req, res) => {
   }
 });
 
-app.put("/toggle-oos/:itemnum", async (req, res) => {
+app.put("/toggle-oss/:itemnum", async (req, res) => {
   try {
     const itemId = req.params.itemnum;
-
-    // Debugging: Log the itemId to see if it's correct
-    console.log("Item Number:", itemId);
 
     // Find the document by the Item_Number
     const item = await itemsModel.findOne({ Item_Number: itemId });
@@ -499,7 +496,7 @@ app.put("/toggle-oos/:itemnum", async (req, res) => {
     }
 
     // Toggle the existing "OOS" field
-    item.OOS = !item.OOS;
+    item.OSS = !item.OSS;
 
     // Save the updated document
     const updatedItem = await item.save();
