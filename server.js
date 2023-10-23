@@ -451,38 +451,23 @@ app.delete("/removeAdditionalInfo/:item", async (req, res) => {
 
 app.post("/add-oos/:item_number", async (req, res) => {
   try {
-    const itemNumber = req.params.item_number;
+    const itemNumber = parseInt(req.params.item_number);
     const isOutOfStock = req.body.OOS;
 
-    // Find the item document with the specified Item_Number
-    const item = await itemsModel.findOne({ Item_Number: itemNumber });
+    // Create a new item document with the "OOS" field
+    const newItem = new itemsModel({
+      Item_Number: itemNumber,
+      OOS: isOutOfStock,
+    });
 
-    if (!item) {
-      return res.status(404).json({ message: "Item not found" });
-    }
+    // Save the new item to the database
+    const savedItem = await newItem.save();
 
-    // Check if "OOS" field exists in the item
-    if (!item.OOS) {
-      // If it doesn't exist, create the field
-      item.OOS = isOutOfStock;
-    } else {
-      // If it exists, update the value
-      item.OOS = isOutOfStock;
-    }
-
-    // Save the updated document
-    await item.save();
-    res
-      .status(200)
-      .json({ message: "Out of stock status updated successfully" });
+    return res.status(201).json(savedItem);
   } catch (error) {
-    console.error("Error updating out-of-stock status", error);
-    res
+    return res
       .status(500)
-      .json({
-        message: "Could not update out-of-stock status",
-        error: error.message,
-      });
+      .json({ message: "Server error", error: error.message });
   }
 });
 
