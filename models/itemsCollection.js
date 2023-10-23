@@ -28,6 +28,8 @@ const itemSchema = new mongoose.Schema({
   Product_Status: String,
   additional_info: String,
   OOS: Boolean,
+  Low_Stock: Boolean,
+  Promo: Boolean,
 });
 
 const itemsModel = mongoose.model("items", itemSchema);

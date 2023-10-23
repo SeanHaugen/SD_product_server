@@ -508,6 +508,65 @@ app.put("/toggle-oos/:itemnum", async (req, res) => {
   }
 });
 
+app.post("/add-lowStock/:item_number", async (req, res) => {
+  try {
+    const itemNumber = req.params.item_number;
+    const isLowOnStock = req.body.Low_Stock;
+
+    // Find the item document with the specified Item_Number
+    const item = await itemsModel.findOne({ Item_Number: itemNumber });
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    // Check if "OOS" field exists in the item
+    if (!item.OOS) {
+      // If it doesn't exist, create the field
+      item.OOS = isLowOnStock;
+    } else {
+      // If it exists, update the value
+      item.OOS = isLowOnStock;
+    }
+
+    // Save the updated document
+    await item.save();
+    res
+      .status(200)
+      .json({ message: "Out of stock status updated successfully" });
+  } catch (error) {
+    console.error("Error updating out-of-stock status", error);
+    res.status(500).json({
+      message: "Could not update out-of-stock status",
+      error: error.message,
+    });
+  }
+});
+
+app.put("/toggle-lowStock/:itemnum", async (req, res) => {
+  try {
+    const itemId = req.params.itemnum;
+
+    // Find the document by the Item_Number
+    const item = await itemsModel.findOne({ Item_Number: itemId });
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    // Toggle the existing "OOS" field
+    item.Low_Stock = !item.Low_Stock;
+
+    // Save the updated document
+    const updatedItem = await item.save();
+
+    return res.status(200).json(updatedItem);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 /////////////////////////////////////////
 //user authentication
 app.post("/register", async (req, res) => {
