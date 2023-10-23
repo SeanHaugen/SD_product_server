@@ -449,12 +449,12 @@ app.delete("/removeAdditionalInfo/:item", async (req, res) => {
 ////////////////////////////////////////
 //requests for OOS/low inventory
 
-app.post("/toggle-oos/:itemNum", async (req, res) => {
+app.post("/toggle-oos/:itemId", async (req, res) => {
   try {
-    const itemNum = req.params.itemNum;
+    const itemId = req.params.itemId;
 
     // Find the document by the Item_Number
-    const item = await itemsModel.findOne({ Item_Number: itemNum });
+    const item = await itemsModel.findOne({ Item_Number: itemId });
 
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
