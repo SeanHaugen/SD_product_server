@@ -449,22 +449,22 @@ app.delete("/removeAdditionalInfo/:item", async (req, res) => {
 ////////////////////////////////////////
 //requests for OOS/low inventory
 
-app.post("/add-oos/:itemnum", async (req, res) => {
+app.post("/add-oos/:item_number", async (req, res) => {
   try {
-    const itemId = req.params.itemnum;
+    const itemNumber = req.params.item_number;
 
     // Debugging: Log the itemId to see if it's correct
-    console.log("Item Number:", itemId);
+    console.log("Item Number:", itemNumber);
 
     // Update the document by the Item_Number to add the "OOS" field
     const result = await itemsModel.findOne(
-      { Item_Number: itemId },
+      { Item_Number: itemNumber },
       { $set: { OOS: true } }
     );
 
-    if (result.nModified === 0) {
-      return res.status(404).json({ message: "Item not found" });
-    }
+    // if (result.nModified === 0) {
+    //   return res.status(404).json({ message: "Item not found" });
+    // }
 
     return res.status(200).json({ message: "OOS field added successfully" });
   } catch (error) {
