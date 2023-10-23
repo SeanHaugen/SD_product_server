@@ -484,7 +484,7 @@ app.post("/add-oos/:item_number", async (req, res) => {
   }
 });
 
-app.put("/toggle-oss/:itemnum", async (req, res) => {
+app.put("/toggle-oos/:itemnum", async (req, res) => {
   try {
     const itemId = req.params.itemnum;
 
