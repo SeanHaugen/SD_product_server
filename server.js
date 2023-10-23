@@ -473,6 +473,30 @@ app.get("/get-oos/:item_number", async (req, res) => {
   }
 });
 
+app.get("/get-lowStock/:item_number", async (req, res) => {
+  try {
+    const itemNumber = req.params.item_number;
+
+    // Find the item document with the specified Item_Number
+    const item = await itemsModel.findOne({ Item_Number: itemNumber });
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    // Check if "OOS" field exists in the item
+    const isLowOnStock = item.Low_Stock || false;
+
+    res.status(200).json({ OOS: isLowOnStock });
+  } catch (error) {
+    console.error("Error fetching out-of-stock status", error);
+    res.status(500).json({
+      message: "Could not fetch out-of-stock status",
+      error: error.message,
+    });
+  }
+});
+
 app.post("/add-oos/:item_number", async (req, res) => {
   try {
     const itemNumber = req.params.item_number;
