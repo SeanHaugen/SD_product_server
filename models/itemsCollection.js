@@ -27,6 +27,7 @@ const itemSchema = new mongoose.Schema({
   Warranty: String,
   Product_Status: String,
   additional_info: String,
+  OOS: Boolean,
 });
 
 const itemsModel = mongoose.model("items", itemSchema);

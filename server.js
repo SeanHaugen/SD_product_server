@@ -446,6 +446,31 @@ app.delete("/removeAdditionalInfo/:item", async (req, res) => {
 /////////////////////////////////////////
 //Put requests for details
 
+////////////////////////////////////////
+//requests for OOS/low inventory
+
+app.post("/add-oos/:itemId", async (req, res) => {
+  try {
+    const itemId = req.params.itemId;
+
+    // Find the document by the Item_Number and update the "OOS" field
+    const updatedItem = await itemsModel.findOneAndUpdate(
+      { Item_Number: itemId },
+      { OOS: true },
+      { new: true }
+    );
+
+    if (!updatedItem) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    return res.status(200).json(updatedItem);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 /////////////////////////////////////////
 //user authentication
 app.post("/register", async (req, res) => {
@@ -475,7 +500,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-const secretKey = "JE24jSrXzlnemqfn"; // Replace with your secret key
+const secretKey = "secrete-key-here"; // Replace with your secret key
 
 app.post("/login", async (req, res) => {
   try {
