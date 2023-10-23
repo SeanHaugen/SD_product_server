@@ -487,7 +487,7 @@ app.get("/get-lowStock/:item_number", async (req, res) => {
     // Check if "OOS" field exists in the item
     const isLowOnStock = item.Low_Stock || false;
 
-    res.status(200).json({ OOS: isLowOnStock });
+    res.status(200).json({ Low_Stock: isLowOnStock });
   } catch (error) {
     console.error("Error fetching out-of-stock status", error);
     res.status(500).json({
