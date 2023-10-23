@@ -456,6 +456,8 @@ app.post("/toggle-oos/:itemId", async (req, res) => {
     // Find the document by the Item_Number
     const item = await itemsModel.findOne({ Item_Number: itemId });
 
+    console.log(itemId);
+
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
     }
