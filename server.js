@@ -533,11 +533,11 @@ app.post("/add-lowStock/:item_number", async (req, res) => {
     await item.save();
     res
       .status(200)
-      .json({ message: "Out of stock status updated successfully" });
+      .json({ message: "Low on stock status updated successfully" });
   } catch (error) {
-    console.error("Error updating out-of-stock status", error);
+    console.error("Error updating Low-on-stock status", error);
     res.status(500).json({
-      message: "Could not update out-of-stock status",
+      message: "Could not update low-on-stock status",
       error: error.message,
     });
   }
