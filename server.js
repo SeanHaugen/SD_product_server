@@ -496,7 +496,7 @@ app.put("/toggle-oos/:itemnum", async (req, res) => {
     }
 
     // Toggle the existing "OOS" field
-    item.OSS = !item.OSS;
+    item.OOS = !item.OOS;
 
     // Save the updated document
     const updatedItem = await item.save();
