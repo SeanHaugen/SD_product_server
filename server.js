@@ -550,12 +550,16 @@ app.put("/toggle-lowStock/:itemnum", async (req, res) => {
     // Find the document by the Item_Number
     const item = await itemsModel.findOne({ Item_Number: itemId });
 
-    if (!item) {
-      return res.status(404).json({ message: "Item not found" });
-    }
+    // if (!item) {
+    //   return res.status(404).json({ message: "Item not found" });
+    // }
 
     // Toggle the existing "OOS" field
-    item.Low_Stock = !item.Low_Stock;
+    // item.Low_Stock = !item.Low_Stock;
+
+    if (req.body.isLowStock !== undefined) {
+      item.Low_Stock = req.body.isLowStock;
+    }
 
     // Save the updated document
     const updatedItem = await item.save();
