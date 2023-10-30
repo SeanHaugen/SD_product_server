@@ -35,58 +35,58 @@ db.once("open", () => console.log("Connected to MongoDB"));
 /////////////////////////////////////////
 //user authentication
 
-app.post("/register", async (req, res) => {
-  try {
-    // Extract user data from the request body
-    const { username, password } = req.body;
-
-    // Check if the username already exists in the database
-    const existingUser = await UserModel.findOne({ username });
-    if (existingUser) {
-      return res.status(400).json({ message: "Username already exists" });
-    }
-
-    // Create a new user instance
-    const newUser = new UserModel({ username, password });
-
-    // Save the new user to the database
-    await newUser.save();
-
-    return res.status(201).json({ message: "User registered successfully" });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Registration failed", error: error.message });
-  }
-});
-
 // app.post("/register", async (req, res) => {
 //   try {
-//     console.log("Received a registration request");
+//     // Extract user data from the request body
 //     const { username, password } = req.body;
 
-//     // Validate user data (you can add more validation)
-//     if (!username || !password) {
-//       return res
-//         .status(400)
-//         .json({ error: "Please provide all required fields." });
+//     // Check if the username already exists in the database
+//     const existingUser = await UserModel.findOne({ username });
+//     if (existingUser) {
+//       return res.status(400).json({ message: "Username already exists" });
 //     }
 
-//     // Hash the password
-//     const hashedPassword = await bcrypt.hash(password, 10);
+//     // Create a new user instance
+//     const newUser = new UserModel({ username, password });
 
-//     // Create a new user in the database
-//     const user = new UserModel({ username, password: hashedPassword });
-//     await user.save();
+//     // Save the new user to the database
+//     await newUser.save();
 
-//     return res.status(201).json({ message: "User registered successfully." });
+//     return res.status(201).json({ message: "User registered successfully" });
 //   } catch (error) {
-//     console.error("Error during registration:", error.message);
 //     return res
 //       .status(500)
-//       .json({ error: "Registration failed. Please try again later." });
+//       .json({ message: "Registration failed", error: error.message });
 //   }
 // });
+
+app.post("/register", async (req, res) => {
+  try {
+    console.log("Received a registration request");
+    const { username, password } = req.body;
+
+    // Validate user data (you can add more validation)
+    if (!username || !password) {
+      return res
+        .status(400)
+        .json({ error: "Please provide all required fields." });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user in the database
+    const user = new UserModel({ username, password: hashedPassword });
+    await user.save();
+
+    return res.status(201).json({ message: "User registered successfully." });
+  } catch (error) {
+    console.error("Error during registration:", error.message);
+    return res
+      .status(500)
+      .json({ error: "Registration failed. Please try again later." });
+  }
+});
 
 const secretKey = process.env.SECRET_KEY || "default-secret-key";
 
