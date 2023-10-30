@@ -65,7 +65,7 @@ const secretKey = "secrete-key-here"; // Replace with your secret key
 
 app.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
     // Find the user by email
     const user = await UserModel.findOne({ email });
