@@ -61,7 +61,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-const secretKey = "secrete-key-here"; // Replace with your secret key
+const secretKey = process.env.SECRET_KEY || "default-secret-key"; // Replace with your secret key
 
 app.post("/login", async (req, res) => {
   try {
