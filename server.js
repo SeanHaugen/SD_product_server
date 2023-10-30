@@ -55,13 +55,14 @@ app.post("/register", async (req, res) => {
 
     return res.status(201).json({ message: "User registered successfully." });
   } catch (error) {
+    console.error("Error during registration:", error.message);
     return res
       .status(500)
       .json({ error: "Registration failed. Please try again later." });
   }
 });
 
-const secretKey = process.env.SECRET_KEY || "default-secret-key"; // Replace with your secret key
+const secretKey = process.env.SECRET_KEY || "default-secret-key";
 
 app.post("/login", async (req, res) => {
   try {
