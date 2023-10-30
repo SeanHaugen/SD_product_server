@@ -32,6 +32,70 @@ const db = mongoose.connection;
 db.on("error", (error) => console.error(`MongoDB connection error: ${error}`));
 db.once("open", () => console.log("Connected to MongoDB"));
 
+/////////////////////////////////////////
+//user authentication
+app.post("/register", async (req, res) => {
+  try {
+    console.log("Received a registration request");
+    const { username, password } = req.body;
+
+    // Validate user data (you can add more validation)
+    if (!username || !password) {
+      return res
+        .status(400)
+        .json({ error: "Please provide all required fields." });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user in the database
+    const user = new UserModel({ username, password: hashedPassword });
+    await user.save();
+
+    return res.status(201).json({ message: "User registered successfully." });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Registration failed. Please try again later." });
+  }
+});
+
+const secretKey = "secrete-key-here"; // Replace with your secret key
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find the user by email
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials." });
+    }
+
+    // Compare the hashed password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid credentials." });
+    }
+
+    // Generate a JWT
+    const token = jwt.sign({ userId: user._id }, secretKey, {
+      expiresIn: "1h",
+    });
+
+    return res.json({ token });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Login failed. Please try again later." });
+  }
+});
+
+/////////////////////////////////////////
+
 //Get the basic item collections
 
 // Get unique categories
@@ -535,7 +599,7 @@ app.post("/add-oos/:item_number", async (req, res) => {
 app.put("/toggle-oos/:itemnum", async (req, res) => {
   try {
     const itemId = req.params.itemnum;
-
+    const returnDate = req.body.date;
     // Find the document by the Item_Number
     const item = await itemsModel.findOne({ Item_Number: itemId });
 
@@ -618,70 +682,6 @@ app.put("/toggle-lowStock/:itemnum", async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
-/////////////////////////////////////////
-//user authentication
-app.post("/register", async (req, res) => {
-  try {
-    console.log("Received a registration request");
-    const { username, password } = req.body;
-
-    // Validate user data (you can add more validation)
-    if (!username || !password) {
-      return res
-        .status(400)
-        .json({ error: "Please provide all required fields." });
-    }
-
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create a new user in the database
-    const user = new UserModel({ username, password: hashedPassword });
-    await user.save();
-
-    return res.status(201).json({ message: "User registered successfully." });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Registration failed. Please try again later." });
-  }
-});
-
-const secretKey = "secrete-key-here"; // Replace with your secret key
-
-app.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // Find the user by email
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      return res.status(401).json({ error: "Invalid credentials." });
-    }
-
-    // Compare the hashed password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid credentials." });
-    }
-
-    // Generate a JWT
-    const token = jwt.sign({ userId: user._id }, secretKey, {
-      expiresIn: "1h",
-    });
-
-    return res.json({ token });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Login failed. Please try again later." });
-  }
-});
-
-/////////////////////////////////////////
 
 app.post("/add/promo-items", async (req, res) => {
   try {
