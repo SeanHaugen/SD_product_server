@@ -321,15 +321,20 @@ app.get("/compare/:itemNumber", async (req, res) => {
 
         // Fetch all mediaspecs from the "mediaspecs" collection
         const mediaspecs = await mediaModel.find();
+        console.log(mediaspecs);
 
         // Create an array to store the matching mediaspecs documents
         const matchingMediaspecs = [];
         console.log(matchingMediaspecs);
 
         for (const material of materialsArray) {
+          // Find a mediaspecs document where Type matches the current material
+          console.log(material);
           const matchingSpec = mediaspecs.find(
-            (spec) => spec.Type === material
+            (spec) => spec.Type === material.toLowerCase()
           );
+          console.log(matchingSpec);
+
           if (matchingSpec) {
             matchingMediaspecs.push(matchingSpec);
           }
@@ -368,6 +373,19 @@ app.get("/document/:pattern", async (req, res) => {
     res.json({ documents });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/promo-items", async (req, res) => {
+  try {
+    // Fetch promo items from the database
+    const promoItems = await promoItemModel.find();
+
+    // Respond with the fetched promo items
+    res.json(promoItems);
+  } catch (error) {
+    // Handle any errors that occur during the database query
+    res.status(500).json({ error: "Failed to fetch promo items" });
   }
 });
 
