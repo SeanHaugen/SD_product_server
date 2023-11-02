@@ -29,6 +29,8 @@ const itemSchema = new mongoose.Schema({
   additional_info: String,
   OOS: Boolean,
   Low_Stock: Boolean,
+  Date: String,
+  Alt: String,
   Promo: Boolean,
 });
 

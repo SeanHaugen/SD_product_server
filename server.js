@@ -35,31 +35,6 @@ db.once("open", () => console.log("Connected to MongoDB"));
 /////////////////////////////////////////
 //user authentication
 
-// app.post("/register", async (req, res) => {
-//   try {
-//     // Extract user data from the request body
-//     const { username, password } = req.body;
-
-//     // Check if the username already exists in the database
-//     const existingUser = await UserModel.findOne({ username });
-//     if (existingUser) {
-//       return res.status(400).json({ message: "Username already exists" });
-//     }
-
-//     // Create a new user instance
-//     const newUser = new UserModel({ username, password });
-
-//     // Save the new user to the database
-//     await newUser.save();
-
-//     return res.status(201).json({ message: "User registered successfully" });
-//   } catch (error) {
-//     return res
-//       .status(500)
-//       .json({ message: "Registration failed", error: error.message });
-//   }
-// });
-
 app.post("/register", async (req, res) => {
   try {
     console.log("Received a registration request");
@@ -121,10 +96,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-/////////////////////////////////////////
-
-//Get the basic item collections
-
+//Get requests from the ItemsCollections
 // Get unique categories
 app.get("/category", async (req, res) => {
   try {
@@ -327,14 +299,58 @@ app.get("/mediaspecs", async (req, res) => {
   }
 });
 
-app.get("/promo-items", async (req, res) => {
+// Define a route for the GET request
+app.get("/compare/:itemNumber", async (req, res) => {
   try {
-    const promoItems = await promoItemModel.find({});
-    console.log(promoItems); // Add this line to log the results
-    res.json(promoItems);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    const itemNumber = req.params.itemNumber;
+
+    // Fetch the item with the specified itemNumber from the "items" collection
+    const item = await itemsModel.findOne(
+      { Item_Number: itemNumber },
+      "Materials"
+    );
+
+    if (item) {
+      // Check if the Materials field exists and is a valid string
+      if (item.Materials && typeof item.Materials === "string") {
+        // Split the Materials string into an array using a delimiter (e.g., ',')
+        const materialsArray = item.Materials.split(",").map((material) =>
+          material.trim()
+        );
+        console.log(materialsArray);
+
+        // Fetch all mediaspecs from the "mediaspecs" collection
+        const mediaspecs = await mediaModel.find();
+
+        // Create an array to store the matching mediaspecs documents
+        const matchingMediaspecs = [];
+        console.log(matchingMediaspecs);
+
+        for (const material of materialsArray) {
+          const matchingSpec = mediaspecs.find(
+            (spec) => spec.Type === material
+          );
+          if (matchingSpec) {
+            matchingMediaspecs.push(matchingSpec);
+          }
+        }
+
+        if (matchingMediaspecs.length > 0) {
+          res.json(matchingMediaspecs);
+        } else {
+          res.json({ message: "No matching Type found" });
+        }
+      } else {
+        res.json({
+          message: "Materials field is undefined or not a valid string",
+        });
+      }
+    } else {
+      res.status(404).json({ message: "Item not found" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -627,6 +643,7 @@ app.put("/toggle-oos/:itemnum", async (req, res) => {
   try {
     const itemId = req.params.itemnum;
     const returnDate = req.body.date;
+    const alternativeOption = req.body.option;
     // Find the document by the Item_Number
     const item = await itemsModel.findOne({ Item_Number: itemId });
 
@@ -636,6 +653,14 @@ app.put("/toggle-oos/:itemnum", async (req, res) => {
 
     // Toggle the existing "OOS" field
     item.OOS = !item.OOS;
+
+    if (returnDate) {
+      item.returnDate = returnDate;
+    }
+
+    if (alternativeOption) {
+      item.alternativeOption = alternativeOption;
+    }
 
     // Save the updated document
     const updatedItem = await item.save();
@@ -709,6 +734,8 @@ app.put("/toggle-lowStock/:itemnum", async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+//Add new items, add items to lists
 
 app.post("/add/promo-items", async (req, res) => {
   try {
