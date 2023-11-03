@@ -326,48 +326,31 @@ app.get("/mediaspecs/:itemNumber", async (req, res) => {
       "Materials"
     );
 
-    if (item) {
-      // Check if the Materials field exists and is a valid string
-      if (item.Materials && typeof item.Materials === "string") {
-        // Split the Materials string into an array using a delimiter (e.g., ',')
-        const materialsArray = item.Materials.split(",").map((material) =>
-          material.trim()
-        );
-        console.log(materialsArray);
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
 
-        // Fetch all mediaspecs from the "mediaspecs" collection
-        const mediaspecs = await mediaModel.find();
-        console.log(mediaspecs);
+    // Check if the Materials field exists and is a valid string
+    if (!item.Materials || typeof item.Materials !== "string") {
+      return res.json({
+        message: "Materials field is undefined or not a valid string",
+      });
+    }
 
-        // Create an array to store the matching mediaspecs documents
-        const matchingMediaspecs = [];
-        console.log(matchingMediaspecs);
+    // Split the Materials string into an array using a delimiter (e.g., ',')
+    const materialsArray = item.Materials.split(",").map((material) =>
+      material.trim()
+    );
 
-        for (const material of materialsArray) {
-          // Find a mediaspecs document where Type matches the current material
-          console.log(material);
-          const matchingSpec = mediaspecs.find(
-            (spec) => spec.Type === material.toLowerCase()
-          );
-          console.log(matchingSpec);
+    // Fetch mediaspecs with a case-insensitive comparison
+    const matchingMediaspecs = await mediaModel.find({
+      Type: { $in: materialsArray.map((material) => material.toLowerCase()) },
+    });
 
-          if (matchingSpec) {
-            matchingMediaspecs.push(matchingSpec);
-          }
-        }
-
-        if (matchingMediaspecs.length > 0) {
-          res.json(matchingMediaspecs);
-        } else {
-          res.json({ message: "No matching Type found" });
-        }
-      } else {
-        res.json({
-          message: "Materials field is undefined or not a valid string",
-        });
-      }
+    if (matchingMediaspecs.length > 0) {
+      res.json(matchingMediaspecs);
     } else {
-      res.status(404).json({ message: "Item not found" });
+      res.status(404).json({ message: "No matching Type found" });
     }
   } catch (err) {
     console.error(err);
