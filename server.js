@@ -299,8 +299,24 @@ app.get("/mediaspecs", async (req, res) => {
   }
 });
 
-// Define a route for the GET request
-app.get("/compare/:itemNumber", async (req, res) => {
+app.get("/specsForMedia", async (req, res) => {
+  try {
+    // Fetch all mediaspecs from the "mediaspecs" collection
+    const mediaspecs = await mediaModel.find();
+
+    if (!mediaspecs || mediaspecs.length === 0) {
+      return res.status(404).json({ error: "No mediaspecs found" });
+    }
+
+    res.json(mediaspecs);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// The get reques is trying to get the mediaspecs from mediaspecs dodument based on a match from items.Materials array
+app.get("/mediaspecs/:itemNumber", async (req, res) => {
   try {
     const itemNumber = req.params.itemNumber;
 
