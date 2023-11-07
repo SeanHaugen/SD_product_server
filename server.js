@@ -714,7 +714,7 @@ app.put("/toggle-lowStock/:itemnum", async (req, res) => {
 app.put("/relatedItems/:itemnum", async (req, res) => {
   try {
     const itemId = req.params.itemnum;
-    const relatedItem = req.body.relatedItem; // Assuming the related item is a single item, not an array
+    const RelatedItems = req.body.RelatedItems; // Assuming the related item is a single item, not an array
 
     // Find document by Item_Number
     const item = await itemsModel.findOne({ Item_Number: itemId });
@@ -723,7 +723,7 @@ app.put("/relatedItems/:itemnum", async (req, res) => {
     }
 
     // Add the relatedItem to the item's relatedItems array
-    item.RelatedItems.push(relatedItem);
+    item.RelatedItems.push(RelatedItems);
 
     // Save the updated item
     await item.save();
