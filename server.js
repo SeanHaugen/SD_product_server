@@ -713,7 +713,7 @@ app.put("/toggle-lowStock/:itemnum", async (req, res) => {
 
 app.put("/relatedItems/:itemnum", async (req, res) => {
   try {
-    const itemId = req.params.itemnum;
+    const itemNumber = req.params.itemnum;
     const { RelatedItems } = req.body;
 
     const item = await itemsModel.findOneAndUpdate(
