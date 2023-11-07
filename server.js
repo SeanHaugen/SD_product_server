@@ -315,49 +315,6 @@ app.get("/specsForMedia", async (req, res) => {
   }
 });
 
-// The get reques is trying to get the mediaspecs from mediaspecs dodument based on a match from items.Materials array
-app.get("/mediaspecs/:itemNumber", async (req, res) => {
-  try {
-    const itemNumber = req.params.itemNumber;
-
-    // Fetch the item with the specified itemNumber from the "items" collection
-    const item = await itemsModel.findOne(
-      { Item_Number: itemNumber },
-      "Materials"
-    );
-
-    if (!item) {
-      return res.status(404).json({ message: "Item not found" });
-    }
-
-    // Check if the Materials field exists and is a valid string
-    if (!item.Materials || typeof item.Materials !== "string") {
-      return res.json({
-        message: "Materials field is undefined or not a valid string",
-      });
-    }
-
-    // Split the Materials string into an array using a delimiter (e.g., ',')
-    const materialsArray = item.Materials.split(",").map((material) =>
-      material.trim()
-    );
-
-    // Fetch mediaspecs with a case-insensitive comparison
-    const matchingMediaspecs = await mediaModel.find({
-      Type: { $in: materialsArray.map((material) => material.toLowerCase()) },
-    });
-
-    if (matchingMediaspecs.length > 0) {
-      res.json(matchingMediaspecs);
-    } else {
-      res.status(404).json({ message: "No matching Type found" });
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
 //Get similar products from items collection
 
 app.get("/document/:pattern", async (req, res) => {
@@ -746,6 +703,31 @@ app.put("/toggle-lowStock/:itemnum", async (req, res) => {
     const updatedItem = await item.save();
 
     return res.status(200).json(updatedItem);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//Requests for adding related items to an item
+
+app.put("/relatedItems/:itemnum", async (req, res) => {
+  try {
+    const itemId = req.params.itemnum;
+    const relatedItem = req.body.relatedItem; // Assuming the related item is a single item, not an array
+
+    // Find document by Item_Number
+    const item = await itemsModel.findOne({ Item_Number: itemId });
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    // Add the relatedItem to the item's relatedItems array
+    item.RelatedItems.push(relatedItem);
+
+    // Save the updated item
+    await item.save();
+    return res.status(200).json(item);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal Server Error" });

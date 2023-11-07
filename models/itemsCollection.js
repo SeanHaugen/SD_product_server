@@ -32,6 +32,7 @@ const itemSchema = new mongoose.Schema({
   Date: String,
   Alt: String,
   Promo: Boolean,
+  RelatedItems: String,
 });
 
 const itemsModel = mongoose.model("items", itemSchema);
