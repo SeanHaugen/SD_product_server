@@ -733,6 +733,54 @@ app.put("/relatedItems/:itemnum", async (req, res) => {
   }
 });
 
+// Update RelatedItems for an entire category
+app.put("/RelatedItemCategory/:categoryName", async (req, res) => {
+  const categoryName = req.params.categoryName;
+  const { RelatedItems } = req.body;
+
+  try {
+    const updatedItems = await itemsModel.updateMany(
+      { Category: categoryName },
+      { $set: { RelatedItems } }
+    );
+
+    if (updatedItems.nModified === 0) {
+      return res
+        .status(404)
+        .json({ message: "No items in the specified category found" });
+    }
+
+    return res.json(updatedItems);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// Update RelatedItems for an entire subcategory
+app.put("/RelatedItemSubcategory/:subcategoryName", async (req, res) => {
+  const subcategoryName = req.params.subcategoryName;
+  const { RelatedItems } = req.body;
+
+  try {
+    const updatedItems = await itemsModel.updateMany(
+      { SubCategory: subcategoryName },
+      { $set: { RelatedItems } }
+    );
+
+    if (updatedItems.nModified === 0) {
+      return res
+        .status(404)
+        .json({ message: "No items in the specified subcategory found" });
+    }
+
+    return res.json(updatedItems);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 //Add new items, add items to lists
 
 app.post("/add/promo-items", async (req, res) => {
