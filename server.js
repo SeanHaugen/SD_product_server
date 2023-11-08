@@ -709,77 +709,33 @@ app.put("/toggle-lowStock/:itemnum", async (req, res) => {
   }
 });
 
-//Requests for adding related items to an item
-
-app.put("/relatedItems/:itemnum", async (req, res) => {
+//update in stock date
+app.put("/update-date/:itemnum", async (req, res) => {
   try {
-    const itemNumber = req.params.itemnum;
-    const { RelatedItems } = req.body;
-
-    const item = await itemsModel.findOneAndUpdate(
-      { Item_Number: itemNumber },
-      { $set: { RelatedItems } },
-      { new: true }
-    );
-
+    const itemId = req.params.itemnum;
+    const newDate = req.body.newDate; // Assuming the new date is sent in the request body
+    // Find the document by the Item_Number
+    const item = await itemsModel.findOne({ Item_Number: itemId });
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
     }
+    // Log the newDate value to check if it's received correctly
+    console.log("Received newDate:", newDate);
+    // Update the date field with the new date
+    item.Date = newDate; // Use the correct field name "Date"
+    // Log the updated item to check if the Date field is updated
+    console.log("Updated item:", item);
+    // Save the updated document
+    const updatedItem = await item.save();
 
-    return res.json(item);
+    return res.status(200).json(updatedItem);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
-// Update RelatedItems for an entire category
-app.put("/RelatedItemCategory/:categoryName", async (req, res) => {
-  const categoryName = req.params.categoryName;
-  const { RelatedItems } = req.body;
-
-  try {
-    const updatedItems = await itemsModel.updateMany(
-      { Category: categoryName },
-      { $set: { RelatedItems } }
-    );
-
-    if (updatedItems.nModified === 0) {
-      return res
-        .status(404)
-        .json({ message: "No items in the specified category found" });
-    }
-
-    return res.json(updatedItems);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-});
-
-// Update RelatedItems for an entire subcategory
-app.put("/RelatedItemSubcategory/:subcategoryName", async (req, res) => {
-  const subcategoryName = req.params.subcategoryName;
-  const { RelatedItems } = req.body;
-
-  try {
-    const updatedItems = await itemsModel.updateMany(
-      { SubCategory: subcategoryName },
-      { $set: { RelatedItems } }
-    );
-
-    if (updatedItems.nModified === 0) {
-      return res
-        .status(404)
-        .json({ message: "No items in the specified subcategory found" });
-    }
-
-    return res.json(updatedItems);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-});
+//Requests for adding related items to an item
 
 //Add new items, add items to lists
 
