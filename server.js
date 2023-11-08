@@ -760,6 +760,39 @@ app.put("/add-alt-item/:itemnum", async (req, res) => {
   }
 });
 
+app.delete("/remove-alt-item/:itemnum", async (req, res) => {
+  const itemId = req.params.itemnum;
+  const altStringToRemove = req.body.altStringToRemove; // Assuming you send the altString to be removed in the request body
+
+  try {
+    // Find the item by ID
+    const item = await itemsModel.findOne({ Item_Number: itemId });
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    // Check if the "Alt" array contains the altString to remove
+    const altIndex = item.Alt.indexOf(altStringToRemove);
+
+    if (altIndex === -1) {
+      return res
+        .status(404)
+        .json({ message: "Alt string not found in the array" });
+    }
+
+    // Remove the altString from the "Alt" array
+    item.Alt.splice(altIndex, 1);
+
+    // Save the updated item
+    await item.save();
+
+    return res.status(200).json({ message: "Alt string removed successfully" });
+  } catch (error) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.delete("/delete-date/:itemnum", async (req, res) => {
   try {
     const itemId = req.params.itemnum;
