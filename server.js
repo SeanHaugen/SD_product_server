@@ -834,6 +834,26 @@ app.post("/add/promo-items", async (req, res) => {
   }
 });
 
+app.delete("/delete/promo-item/:itemId", async (req, res) => {
+  try {
+    const itemId = req.params.itemId; // Get the item ID from the URL parameter
+
+    // Find and delete the item in the promos collection by its ID
+    const deletedItem = await promoItemModel.findOneAndDelete({
+      Item_Number: itemId,
+    });
+
+    if (!deletedItem) {
+      return res.status(404).json({ error: "Item not found" });
+    }
+
+    res.status(200).json(deletedItem);
+  } catch (error) {
+    console.error("Error deleting promo item:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 app.post("/add", async (req, res) => {
   try {
     const {
