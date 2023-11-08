@@ -735,6 +735,31 @@ app.put("/update-date/:itemnum", async (req, res) => {
   }
 });
 
+//add alternative item options to list
+app.put("/add-alt-item/:itemnum", async (req, res) => {
+  const itemId = req.params.itemnum;
+  const newAltString = req.body.newAltString; // Assuming you send the newAltString in the request body
+
+  try {
+    // Find the item by ID
+    const item = await itemsModel.findOne({ Item_Number: itemId });
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    // Add the newAltString to the "Alt" array
+    item.Alt.push(newAltString);
+
+    // Save the updated item
+    await item.save();
+
+    return res.status(200).json({ message: "Alt string added successfully" });
+  } catch (error) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.delete("/delete-date/:itemnum", async (req, res) => {
   try {
     const itemId = req.params.itemnum;

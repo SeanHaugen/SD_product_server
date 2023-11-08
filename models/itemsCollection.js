@@ -30,7 +30,7 @@ const itemSchema = new mongoose.Schema({
   OOS: Boolean,
   Low_Stock: Boolean,
   Date: Date,
-  Alt: String,
+  Alt: Array,
   Promo: Boolean,
   RelatedItems: String,
 });
