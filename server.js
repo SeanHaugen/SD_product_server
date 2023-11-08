@@ -735,6 +735,30 @@ app.put("/update-date/:itemnum", async (req, res) => {
   }
 });
 
+app.delete("/delete-date/:itemnum", async (req, res) => {
+  try {
+    const itemId = req.params.itemnum;
+
+    // Find the document by the Item_Number
+    const item = await itemsModel.findOne({ Item_Number: itemId });
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    // Remove the Date field from the document
+    item.Date = null; // Set it to null or undefined, depending on your preference
+
+    // Save the updated document without the Date field
+    const updatedItem = await item.save();
+
+    return res.status(200).json(updatedItem);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 //Requests for adding related items to an item
 
 //Add new items, add items to lists
