@@ -821,9 +821,12 @@ app.delete("/delete-date/:itemnum", async (req, res) => {
 
 //Add new items, add items to lists
 
-app.post("/add/promo-items", async (req, res) => {
+app.post("/add/promo-items/:itemNum", async (req, res) => {
   try {
     const newItemData = req.body; // This should contain the selected item data
+    console.log("Received data:", newItemData);
+    const itemNum = req.params.itemNum;
+    console.log("Received request for item number:", itemNum);
     const newPromoItem = new promoItemModel(newItemData);
     await newPromoItem.save();
     console.log(newPromoItem);
