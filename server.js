@@ -132,6 +132,15 @@ app.get("/SubCategory", async (req, res) => {
   res.send(allItems);
 });
 
+app.get("/items/oos", async (req, res) => {
+  try {
+    const oosItems = await itemsModel.find({ OOS: true });
+    res.json(oosItems);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 //get the item
 app.get("/subCategory/:items", async (req, res) => {
   const productCategory = req.params.items;
