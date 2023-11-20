@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const path = require("path");
 const fs = require("fs");
-const axios = require("axios");
 
 const itemsModel = require("./models/itemsCollection");
 const PricingModel = require("./models/priceCollection");
@@ -970,13 +969,13 @@ app.post("/pricingAdd", async (req, res) => {
 
 //images
 
-const localImagePath = path.resolve(__dirname, "images");
+const networkImagePath = path.resolve("var/task/images/");
 
 app.get("/images/:filename", (req, res) => {
   const filename = req.params.filename + ".jpg";
 
   // Use path.join to construct the file path
-  const filePath = path.join(localImagePath, filename);
+  const filePath = path.join(networkImagePath, filename);
   console.log(filePath);
 
   res.sendFile(filePath, (err) => {
