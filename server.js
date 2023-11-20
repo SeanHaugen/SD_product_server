@@ -969,7 +969,7 @@ app.post("/pricingAdd", async (req, res) => {
 
 //images
 
-const networkImagePath = path.resolve("var/task/images/");
+// const networkImagePath = path.resolve("var/task/images/");
 
 app.get("/images/:filename", (req, res) => {
   const filename = req.params.filename + ".jpg";
