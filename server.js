@@ -975,7 +975,7 @@ app.get("/images/:filename", (req, res) => {
   const filename = req.params.filename + ".jpg";
 
   // Use path.join to construct the file path
-  const filePath = path.join(networkImagePath, filename);
+  const filePath = path.join(filename);
   console.log(filePath);
 
   res.sendFile(filePath, (err) => {
