@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const path = require("path");
 const fs = require("fs");
+const axios = require("axios");
 
 const itemsModel = require("./models/itemsCollection");
 const PricingModel = require("./models/priceCollection");
@@ -969,24 +970,30 @@ app.post("/pricingAdd", async (req, res) => {
 
 //images
 
-const networkImagePath = path.resolve("K:/Customer Care/Info Hub/images/");
+const githubRepoUrl =
+  "https://raw.githubusercontent.com/SeanHaugen/SD_product_server/main/images/";
 
-// app.use("/images", express.static(networkImagePath.replace(/\\/g, "/")));
-app.use("/images", express.static(path.join(__dirname, "images")));
-
-app.get("/images/:filename", (req, res) => {
+app.get("/images/:filename", async (req, res) => {
   const filename = req.params.filename + ".jpg";
 
-  // Use path.join to construct the file path
-  const filePath = path.join(networkImagePath, filename);
-  console.log(filePath);
+  // Construct the raw content URL for the image
+  const imageUrl = `${githubRepoUrl}${filename}`;
 
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      console.error(err);
-      res.status(404).send("Image not found");
-    }
-  });
+  try {
+    // Fetch the image from the GitHub repository
+    const imageResponse = await axios.get(imageUrl, {
+      responseType: "arraybuffer",
+    });
+
+    // Set the appropriate content type for the response
+    res.set("Content-Type", "image/jpeg");
+
+    // Send the image data as the response
+    res.send(Buffer.from(imageResponse.data, "binary"));
+  } catch (error) {
+    console.error(error);
+    res.status(404).send("Image not found");
+  }
 });
 
 // app.get("/images/:filename", (req, res) => {
