@@ -968,32 +968,30 @@ app.post("/pricingAdd", async (req, res) => {
 
 //images
 
-const relativeImagePath =
-  "./OneDrive - Sign-Zone Inc/Pictures/images/01Products";
+const networkImagePath =
+  "\\sz-fs01\\company\\sales-customer-service\\Customer Service\\Info Hub\\Product Info\\images";
 
 // Example route to serve an image
 app.get("/images/:filename", (req, res) => {
   const filename = req.params.filename;
 
-  // Combine the base directory with the stored relative path
-  const basePath = __dirname; // Use the appropriate method to get your app's base directory
+  // Combine the network path with the filename
+  const imagePath = path.join(networkImagePath, filename);
 
-  // Remove the specified chunk from the base path
-  const relativeBasePath = path.relative(
-    path.join(basePath, "Desktop", "code", "serverProject"),
-    basePath
-  );
+  console.log("Constructed Image Path:", imagePath);
 
-  console.log(relativeBasePath);
-
-  // Combine the updated base path with the stored relative path and the filename
-  const imagePath = path.join(relativeBasePath, relativeImagePath, filename);
-  console.log(imagePath);
-
+  // Convert the network path to an absolute path
   const absoluteImagePath = path.resolve(imagePath);
 
+  console.log("Absolute Image Path:", absoluteImagePath);
+
   // Send the image as a response
-  res.sendFile(absoluteImagePath);
+  res.sendFile(absoluteImagePath, (err) => {
+    if (err) {
+      console.error(err);
+      res.status(404).send("Image not found");
+    }
+  });
 });
 
 app.listen(port, () => {
