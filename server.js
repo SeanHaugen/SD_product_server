@@ -969,15 +969,17 @@ app.post("/pricingAdd", async (req, res) => {
 
 //images
 
-const networkImagePath = "/var/task/K:/Customer Care/Info Hub/images/";
+const networkImagePath = "K:/Customer Care/Info Hub/images/";
 
 app.use("/images", express.static(networkImagePath.replace(/\\/g, "/")));
 
 app.get("/images/:filename", (req, res) => {
   const filename = req.params.filename + ".jpg";
-  console.log(filename);
-  res.sendFile(path.join(networkImagePath, filename), (err) => {
-    console.log(networkImagePath + filename);
+
+  // Use path.join to construct the file path
+  const filePath = path.join(networkImagePath, filename);
+
+  res.sendFile(filePath, (err) => {
     if (err) {
       console.error(err);
       res.status(404).send("Image not found");
