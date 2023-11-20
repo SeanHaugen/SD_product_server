@@ -4,6 +4,7 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const path = require("path");
+const fs = require("fs");
 
 const itemsModel = require("./models/itemsCollection");
 const PricingModel = require("./models/priceCollection");
@@ -968,12 +969,16 @@ app.post("/pricingAdd", async (req, res) => {
 
 //images
 
-const networkImagePath =
-  "\\sz-fs01\\company\\sales-customer-service\\Customer Service\\Info Hub\\Product Info\\images\\";
+const networkImagePath = "K:\\Customer Care\\Info Hub\\images\\";
 
-// Example route to serve an image
 app.get("/images/:filename", (req, res) => {
-  const filename = req.params.filename;
+  let filename = req.params.filename;
+
+  // Decode the filename
+  filename = decodeURIComponent(filename);
+
+  // Add ".jpg" to the filename
+  filename += ".jpg";
 
   // Combine the network path with the filename
   const imagePath = path.join(networkImagePath, filename);
@@ -985,11 +990,19 @@ app.get("/images/:filename", (req, res) => {
 
   console.log("Absolute Image Path:", absoluteImagePath);
 
-  // Send the image as a response
-  res.sendFile(absoluteImagePath, (err) => {
+  // Check if the file exists
+  fs.stat(absoluteImagePath, (err, stats) => {
     if (err) {
       console.error(err);
       res.status(404).send("Image not found");
+    } else {
+      // Send the image as a response
+      res.sendFile(absoluteImagePath, (err) => {
+        if (err) {
+          console.error(err);
+          res.status(404).send("Image not found");
+        }
+      });
     }
   });
 });
