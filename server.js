@@ -970,30 +970,21 @@ app.post("/pricingAdd", async (req, res) => {
 
 //images
 
-const githubRepoUrl =
-  "https://raw.githubusercontent.com/SeanHaugen/SD_product_server/main/images/";
+const localImagePath = path.resolve(__dirname, "images");
 
-app.get("/images/:filename", async (req, res) => {
+app.get("/images/:filename", (req, res) => {
   const filename = req.params.filename + ".jpg";
 
-  // Construct the raw content URL for the image
-  const imageUrl = `${githubRepoUrl}${filename}`;
+  // Use path.join to construct the file path
+  const filePath = path.join(localImagePath, filename);
+  console.log(filePath);
 
-  try {
-    // Fetch the image from the GitHub repository
-    const imageResponse = await axios.get(imageUrl, {
-      responseType: "arraybuffer",
-    });
-
-    // Set the appropriate content type for the response
-    res.set("Content-Type", "image/jpeg");
-
-    // Send the image data as the response
-    res.send(Buffer.from(imageResponse.data, "binary"));
-  } catch (error) {
-    console.error(error);
-    res.status(404).send("Image not found");
-  }
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error(err);
+      res.status(404).send("Image not found");
+    }
+  });
 });
 
 // app.get("/images/:filename", (req, res) => {
