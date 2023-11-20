@@ -969,12 +969,10 @@ app.post("/pricingAdd", async (req, res) => {
 
 //images
 
-const networkImagePath = path.resolve(
-  __dirname,
-  "K:/Customer Care/Info Hub/images/"
-);
+const networkImagePath = path.resolve("K:/Customer Care/Info Hub/images/");
 
-app.use("/images", express.static(networkImagePath.replace(/\\/g, "/")));
+// app.use("/images", express.static(networkImagePath.replace(/\\/g, "/")));
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 app.get("/images/:filename", (req, res) => {
   const filename = req.params.filename + ".jpg";
