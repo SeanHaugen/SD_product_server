@@ -970,6 +970,8 @@ app.post("/pricingAdd", async (req, res) => {
 //images
 
 const networkImagePath = "K:\\Customer Care\\Info Hub\\images\\";
+const staticFilesPath = path.join(__dirname, "images");
+app.use("/images", express.static(staticFilesPath));
 
 app.get("/images/:filename", (req, res) => {
   let filename = req.params.filename;
@@ -980,24 +982,19 @@ app.get("/images/:filename", (req, res) => {
   // Add ".jpg" to the filename
   filename += ".jpg";
 
-  // Combine the network path with the filename
-  const imagePath = path.join(networkImagePath, filename);
+  // Construct the full path to the image
+  const imagePath = path.join(staticFilesPath, filename);
 
   console.log("Constructed Image Path:", imagePath);
 
-  // Convert the network path to an absolute path
-  const absoluteImagePath = path.resolve(imagePath);
-
-  console.log("Absolute Image Path:", absoluteImagePath);
-
   // Check if the file exists
-  fs.stat(absoluteImagePath, (err, stats) => {
+  fs.stat(imagePath, (err, stats) => {
     if (err) {
       console.error(err);
       res.status(404).send("Image not found");
     } else {
       // Send the image as a response
-      res.sendFile(absoluteImagePath, (err) => {
+      res.sendFile(imagePath, (err) => {
         if (err) {
           console.error(err);
           res.status(404).send("Image not found");
