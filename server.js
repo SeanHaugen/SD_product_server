@@ -15,6 +15,7 @@ const mediaModel = require("./models/mediaCollection");
 const promoItemModel = require("./models/promoCollection");
 const additionalInfoModel = require("./models/addtionalInfoCollection");
 const UserModel = require("./models/userCollection");
+const imageModel = require("./models/imageCollection");
 
 DATABASE_PASSWORD = "DkD0ml96WSM62TAn";
 DATABASE = `mongodb+srv://seanhaugen560:${DATABASE_PASSWORD}@cluster0.adhrbht.mongodb.net/products?retryWrites=true&w=majority`;
@@ -969,21 +970,32 @@ app.post("/pricingAdd", async (req, res) => {
 
 //images
 
-// const networkImagePath = path.resolve("var/task/images/");
+app.get("/images/:pathName", async (req, res) => {
+  const imagePath = req.params.pathName;
 
-app.get("/images/:filename", (req, res) => {
-  const filename = req.params.filename + ".jpg";
+  try {
+    // Fetch the image data from the database based on the provided path
+    const image = await imageModel.findOne({ path: imagePath });
 
-  // Use path.join to construct the file path
-  const filePath = path.join(filename);
-  console.log(filePath);
-
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      console.error(err);
-      res.status(404).send("Image not found");
+    if (!image) {
+      return res.status(404).send("Image not found");
     }
-  });
+
+    // Use path.join to construct the absolute file path using the stored relative path
+    const absolutePath = path.join(__dirname, image.path);
+    console.log(absolutePath);
+
+    // Send the file using res.sendFile
+    res.sendFile(absolutePath, (err) => {
+      if (err) {
+        console.error(err);
+        res.status(404).send("Image not found");
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 // app.get("/images/:filename", (req, res) => {
