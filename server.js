@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const path = require("path");
 
 const itemsModel = require("./models/itemsCollection");
 const PricingModel = require("./models/priceCollection");
@@ -963,6 +964,36 @@ app.post("/pricingAdd", async (req, res) => {
       .status(500)
       .json({ message: "Error adding item pricing", error: error.message });
   }
+});
+
+//images
+
+const relativeImagePath =
+  "./OneDrive - Sign-Zone Inc/Pictures/images/01Products";
+
+// Example route to serve an image
+app.get("/images/:filename", (req, res) => {
+  const filename = req.params.filename;
+
+  // Combine the base directory with the stored relative path
+  const basePath = __dirname; // Use the appropriate method to get your app's base directory
+
+  // Remove the specified chunk from the base path
+  const relativeBasePath = path.relative(
+    path.join(basePath, "Desktop", "code", "serverProject"),
+    basePath
+  );
+
+  console.log(relativeBasePath);
+
+  // Combine the updated base path with the stored relative path and the filename
+  const imagePath = path.join(relativeBasePath, relativeImagePath, filename);
+  console.log(imagePath);
+
+  const absoluteImagePath = path.resolve(imagePath);
+
+  // Send the image as a response
+  res.sendFile(absoluteImagePath);
 });
 
 app.listen(port, () => {
