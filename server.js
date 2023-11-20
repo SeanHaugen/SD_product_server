@@ -969,7 +969,7 @@ app.post("/pricingAdd", async (req, res) => {
 //images
 
 const networkImagePath =
-  "\\sz-fs01\\company\\sales-customer-service\\Customer Service\\Info Hub\\Product Info\\images";
+  "/sz-fs01/company/sales-customer-service/Customer Service/Info Hub/Product Info/images";
 
 // Example route to serve an image
 app.get("/images/:filename", (req, res) => {
