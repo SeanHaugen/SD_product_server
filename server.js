@@ -971,41 +971,53 @@ app.post("/pricingAdd", async (req, res) => {
 
 const networkImagePath = "K:\\Customer Care\\Info Hub\\images\\";
 
+app.use("/images", express.static(networkImagePath));
+
 app.get("/images/:filename", (req, res) => {
-  let filename = req.params.filename;
-
-  // Decode the filename
-  filename = decodeURIComponent(filename);
-
-  // Add ".jpg" to the filename
-  filename += ".jpg";
-
-  // Combine the network path with the filename
-  const imagePath = path.join(networkImagePath, filename);
-
-  console.log("Constructed Image Path:", imagePath);
-
-  // Convert the network path to an absolute path
-  const absoluteImagePath = path.resolve(imagePath);
-
-  console.log("Absolute Image Path:", absoluteImagePath);
-
-  // Check if the file exists
-  fs.stat(absoluteImagePath, (err, stats) => {
+  const filename = req.params.filename + ".jpg";
+  res.sendFile(path.join(networkImagePath, filename), (err) => {
     if (err) {
       console.error(err);
       res.status(404).send("Image not found");
-    } else {
-      // Send the image as a response
-      res.sendFile(absoluteImagePath, (err) => {
-        if (err) {
-          console.error(err);
-          res.status(404).send("Image not found");
-        }
-      });
     }
   });
 });
+
+// app.get("/images/:filename", (req, res) => {
+//   let filename = req.params.filename;
+
+//   // Decode the filename
+//   filename = decodeURIComponent(filename);
+
+//   // Add ".jpg" to the filename
+//   filename += ".jpg";
+
+//   // Combine the network path with the filename
+//   const imagePath = path.join(networkImagePath, filename);
+
+//   console.log("Constructed Image Path:", imagePath);
+
+//   // Convert the network path to an absolute path
+//   const absoluteImagePath = path.resolve(imagePath);
+
+//   console.log("Absolute Image Path:", absoluteImagePath);
+
+//   // Check if the file exists
+//   fs.stat(absoluteImagePath, (err, stats) => {
+//     if (err) {
+//       console.error(err);
+//       res.status(404).send("Image not found");
+//     } else {
+//       // Send the image as a response
+//       res.sendFile(absoluteImagePath, (err) => {
+//         if (err) {
+//           console.error(err);
+//           res.status(404).send("Image not found");
+//         }
+//       });
+//     }
+//   });
+// });
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
