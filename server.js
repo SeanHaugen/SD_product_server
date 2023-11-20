@@ -969,7 +969,10 @@ app.post("/pricingAdd", async (req, res) => {
 
 //images
 
-const networkImagePath = "K:/Customer Care/Info Hub/images/";
+const networkImagePath = path.resolve(
+  __dirname,
+  "K:/Customer Care/Info Hub/images/"
+);
 
 app.use("/images", express.static(networkImagePath.replace(/\\/g, "/")));
 
