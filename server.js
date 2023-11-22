@@ -4,7 +4,7 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const path = require("path");
-const fs = require("fs");
+const axios = require("axios");
 
 const itemsModel = require("./models/itemsCollection");
 const PricingModel = require("./models/priceCollection");
@@ -15,7 +15,6 @@ const mediaModel = require("./models/mediaCollection");
 const promoItemModel = require("./models/promoCollection");
 const additionalInfoModel = require("./models/addtionalInfoCollection");
 const UserModel = require("./models/userCollection");
-const imageModel = require("./models/imageCollection");
 
 DATABASE_PASSWORD = "DkD0ml96WSM62TAn";
 DATABASE = `mongodb+srv://seanhaugen560:${DATABASE_PASSWORD}@cluster0.adhrbht.mongodb.net/products?retryWrites=true&w=majority`;
@@ -969,70 +968,6 @@ app.post("/pricingAdd", async (req, res) => {
 });
 
 //images
-
-app.get("/images/:pathName", async (req, res) => {
-  const imagePath = req.params.pathName;
-
-  try {
-    // Fetch the image data from the database based on the provided path
-    const image = await imageModel.findOne({ path: imagePath });
-
-    if (!image) {
-      return res.status(404).send("Image not found");
-    }
-
-    // Use path.join to construct the absolute file path using the stored relative path
-    const absolutePath = path.join(__dirname, image.path);
-    console.log(absolutePath);
-
-    // Send the file using res.sendFile
-    res.sendFile(absolutePath, (err) => {
-      if (err) {
-        console.error(err);
-        res.status(404).send("Image not found");
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-// app.get("/images/:filename", (req, res) => {
-//   let filename = req.params.filename;
-
-//   // Decode the filename
-//   filename = decodeURIComponent(filename);
-
-//   // Add ".jpg" to the filename
-//   filename += ".jpg";
-
-//   // Combine the network path with the filename
-//   const imagePath = path.join(networkImagePath, filename);
-
-//   console.log("Constructed Image Path:", imagePath);
-
-//   // Convert the network path to an absolute path
-//   const absoluteImagePath = path.resolve(imagePath);
-
-//   console.log("Absolute Image Path:", absoluteImagePath);
-
-//   // Check if the file exists
-//   fs.stat(absoluteImagePath, (err, stats) => {
-//     if (err) {
-//       console.error(err);
-//       res.status(404).send("Image not found");
-//     } else {
-//       // Send the image as a response
-//       res.sendFile(absoluteImagePath, (err) => {
-//         if (err) {
-//           console.error(err);
-//           res.status(404).send("Image not found");
-//         }
-//       });
-//     }
-//   });
-// });
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

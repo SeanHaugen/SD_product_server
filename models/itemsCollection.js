@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const itemSchema = new mongoose.Schema({
-  Item_Number: Number,
+  Item_Number: String,
   Name: String,
   Category: String,
   SubCategory: String,
