@@ -162,7 +162,15 @@ app.get("/subCategory/:items", async (req, res) => {
 app.get("/items", async (req, res) => {
   const itemNumber = req.query.item;
   try {
-    const item = await itemsModel.findOne({ Item_Number: itemNumber });
+    let query;
+    if (!isNaN(itemNumber)) {
+      // If itemNumber is a number, convert it to a number in the query
+      query = { Item_Number: parseInt(itemNumber) };
+    } else {
+      // If itemNumber is not a number, treat it as a string in the query
+      query = { Item_Number: itemNumber };
+    }
+    const item = await itemsModel.findOne(query);
     res.send(item);
   } catch (err) {
     console.error(err);
