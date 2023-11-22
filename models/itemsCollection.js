@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const itemSchema = new mongoose.Schema({
-  Item_Number: String,
+  Item_Number: mongoose.Schema.Types.Mixed,
   Name: String,
   Category: String,
   SubCategory: String,
