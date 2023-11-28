@@ -648,7 +648,7 @@ app.put("/toggle-oos/:itemnum", async (req, res) => {
     item.OOS = !item.OOS;
 
     if (returnDate) {
-      item.returnDate = returnDate;
+      item.Date = returnDate; // Corrected field name
     }
 
     if (alternativeOption) {
@@ -677,12 +677,12 @@ app.post("/add-lowStock/:item_number", async (req, res) => {
       return res.status(404).json({ message: "Item not found" });
     }
 
-    // Check if "OOS" field exists in the item
-    if (!item.Low_Stock) {
-      // If it doesn't exist, create the field
+    // Check if "Low_Stock" field exists in the item
+    if (item.Low_Stock !== undefined) {
+      // If it exists, update the value
       item.Low_Stock = isLowOnStock;
     } else {
-      // If it exists, update the value
+      // If it doesn't exist, create the field
       item.Low_Stock = isLowOnStock;
     }
 
@@ -711,9 +711,10 @@ app.put("/toggle-lowStock/:itemnum", async (req, res) => {
       return res.status(404).json({ message: "Item not found" });
     }
 
-    // Toggle the existing "OOS" field
+    // Toggle the existing "Low_Stock" field
     item.Low_Stock = !item.Low_Stock;
 
+    // If you want to set an explicit value from the request body, uncomment the following block
     // if (req.body.isLowStock !== undefined) {
     //   item.Low_Stock = req.body.isLowStock;
     // }
