@@ -162,15 +162,7 @@ app.get("/subCategory/:items", async (req, res) => {
 app.get("/items", async (req, res) => {
   const itemNumber = req.query.item;
   try {
-    let query;
-    if (!isNaN(itemNumber)) {
-      // If itemNumber is a number, convert it to a number in the query
-      query = { Item_Number: parseInt(itemNumber) };
-    } else {
-      // If itemNumber is not a number, treat it as a string in the query
-      query = { Item_Number: itemNumber };
-    }
-    const item = await itemsModel.findOne(query);
+    const item = await itemsModel.findOne({ Item_Number: itemNumber });
     res.send(item);
   } catch (err) {
     console.error(err);
@@ -648,7 +640,7 @@ app.put("/toggle-oos/:itemnum", async (req, res) => {
     item.OOS = !item.OOS;
 
     if (returnDate) {
-      item.Date = returnDate; // Corrected field name
+      item.returnDate = returnDate;
     }
 
     if (alternativeOption) {
@@ -677,12 +669,12 @@ app.post("/add-lowStock/:item_number", async (req, res) => {
       return res.status(404).json({ message: "Item not found" });
     }
 
-    // Check if "Low_Stock" field exists in the item
-    if (item.Low_Stock !== undefined) {
-      // If it exists, update the value
+    // Check if "OOS" field exists in the item
+    if (!item.Low_Stock) {
+      // If it doesn't exist, create the field
       item.Low_Stock = isLowOnStock;
     } else {
-      // If it doesn't exist, create the field
+      // If it exists, update the value
       item.Low_Stock = isLowOnStock;
     }
 
@@ -711,10 +703,9 @@ app.put("/toggle-lowStock/:itemnum", async (req, res) => {
       return res.status(404).json({ message: "Item not found" });
     }
 
-    // Toggle the existing "Low_Stock" field
+    // Toggle the existing "OOS" field
     item.Low_Stock = !item.Low_Stock;
 
-    // If you want to set an explicit value from the request body, uncomment the following block
     // if (req.body.isLowStock !== undefined) {
     //   item.Low_Stock = req.body.isLowStock;
     // }
