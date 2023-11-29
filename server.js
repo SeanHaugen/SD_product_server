@@ -566,10 +566,19 @@ app.delete("/removeAdditionalInfo/:item", async (req, res) => {
 
 app.get("/get-oos/:item_number", async (req, res) => {
   try {
-    const itemNumber = req.params.item_number.trim();
-    console.log("Fetching item with Item_Number:", itemNumber);
+    const itemNumber = req.params.item_number;
 
-    // Rest of your code
+    // Find the item document with the specified Item_Number
+    const item = await itemsModel.findOne({ Item_Number: itemNumber });
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    // Check if "OOS" field exists in the item
+    const isOutOfStock = item.OOS || false;
+
+    res.status(200).json({ OOS: isOutOfStock });
   } catch (error) {
     console.error("Error fetching out-of-stock status", error);
     res.status(500).json({
@@ -641,15 +650,12 @@ app.post("/add-oos/:item_number", async (req, res) => {
 app.put("/toggle-oos/:itemnum", async (req, res) => {
   try {
     const itemId = req.params.itemnum;
-
-    // Find the document by the Item_Number
     const item = await itemsModel.findOne({ Item_Number: itemId });
 
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
     }
 
-    // Toggle the existing "OOS" field
     item.OOS = !item.OOS;
 
     // Save the updated document
@@ -700,15 +706,12 @@ app.post("/add-lowStock/:item_number", async (req, res) => {
 app.put("/toggle-lowStock/:itemnum", async (req, res) => {
   try {
     const itemId = req.params.itemnum;
-
-    // Find the document by the Item_Number
     const item = await itemsModel.findOne({ Item_Number: itemId });
 
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
     }
 
-    // Toggle the existing "OOS" field
     item.Low_Stock = !item.Low_Stock;
 
     // Save the updated document
