@@ -161,8 +161,24 @@ app.get("/subCategory/:items", async (req, res) => {
 //Get items through Search
 app.get("/items", async (req, res) => {
   const itemNumber = req.query.item;
+
+  if (!itemNumber) {
+    return res
+      .status(400)
+      .send("Item number is required in the query parameters.");
+  }
+
   try {
     const item = await itemsModel.findOne({ Item_Number: itemNumber });
+
+    if (!item) {
+      return res.status(404).send("Item not found");
+    }
+
+    // Log the request and response
+    console.log("Request:", req.query);
+    console.log("Retrieved Item:", item);
+
     res.send(item);
   } catch (err) {
     console.error(err);
@@ -543,19 +559,10 @@ app.delete("/removeAdditionalInfo/:item", async (req, res) => {
 
 app.get("/get-oos/:item_number", async (req, res) => {
   try {
-    const itemNumber = req.params.item_number;
+    const itemNumber = req.params.item_number.trim();
+    console.log("Fetching item with Item_Number:", itemNumber);
 
-    // Find the item document with the specified Item_Number
-    const item = await itemsModel.findOne({ Item_Number: itemNumber });
-
-    if (!item) {
-      return res.status(404).json({ message: "Item not found" });
-    }
-
-    // Check if "OOS" field exists in the item
-    const isOutOfStock = item.OOS || false;
-
-    res.status(200).json({ OOS: isOutOfStock });
+    // Rest of your code
   } catch (error) {
     console.error("Error fetching out-of-stock status", error);
     res.status(500).json({
