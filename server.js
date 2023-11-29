@@ -169,14 +169,21 @@ app.get("/items", async (req, res) => {
   }
 
   try {
+    // Log the request
+    console.log("Request:", req.query);
+
+    // Log all items in the collection
+    // const allItems = await itemsModel.find({});
+    // console.log("All Items in Collection:", allItems);
+
+    // Query the specific item
     const item = await itemsModel.findOne({ Item_Number: itemNumber });
 
     if (!item) {
       return res.status(404).send("Item not found");
     }
 
-    // Log the request and response
-    console.log("Request:", req.query);
+    // Log the retrieved item
     console.log("Retrieved Item:", item);
 
     res.send(item);
