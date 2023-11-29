@@ -640,11 +640,10 @@ app.post("/add-oos/:item_number", async (req, res) => {
 
 app.put("/toggle-oos/:itemnum", async (req, res) => {
   try {
-    const itemNumber = req.params.itemnum;
-    const returnDate = req.body.date;
-    const alternativeOption = req.body.option;
+    const itemId = req.params.itemnum;
+
     // Find the document by the Item_Number
-    const item = await itemsModel.findOne({ Item_Number: itemNumber });
+    const item = await itemsModel.findOne({ Item_Number: itemId });
 
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
@@ -652,14 +651,6 @@ app.put("/toggle-oos/:itemnum", async (req, res) => {
 
     // Toggle the existing "OOS" field
     item.OOS = !item.OOS;
-
-    if (returnDate) {
-      item.returnDate = returnDate;
-    }
-
-    if (alternativeOption) {
-      item.alternativeOption = alternativeOption;
-    }
 
     // Save the updated document
     const updatedItem = await item.save();
@@ -719,10 +710,6 @@ app.put("/toggle-lowStock/:itemnum", async (req, res) => {
 
     // Toggle the existing "OOS" field
     item.Low_Stock = !item.Low_Stock;
-
-    // if (req.body.isLowStock !== undefined) {
-    //   item.Low_Stock = req.body.isLowStock;
-    // }
 
     // Save the updated document
     const updatedItem = await item.save();
