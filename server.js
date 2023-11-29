@@ -640,11 +640,11 @@ app.post("/add-oos/:item_number", async (req, res) => {
 
 app.put("/toggle-oos/:itemnum", async (req, res) => {
   try {
-    const itemId = req.params.itemnum;
+    const itemNumber = req.params.itemnum;
     const returnDate = req.body.date;
     const alternativeOption = req.body.option;
     // Find the document by the Item_Number
-    const item = await itemsModel.findOne({ Item_Number: itemId });
+    const item = await itemsModel.findOne({ Item_Number: itemNumber });
 
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
