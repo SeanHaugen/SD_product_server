@@ -199,27 +199,24 @@ app.put("/notes/:userId/:currentPage", authenticateToken, async (req, res) => {
   }
 });
 
-app.delete(
-  "/notes/:userId/:currentPage",
-  authenticateToken,
-  async (req, res) => {
-    try {
-      const { userId, currentPage } = req.params;
+app.delete("/notes/:userId", authenticateToken, async (req, res) => {
+  try {
+    const { userId } = req.params;
 
-      const user = await UserModel.findById(userId);
+    const user = await UserModel.findById(userId);
 
-      if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-      user.notes = user.notes.filter((n) => !(n.page === currentPage));
-      await user.save();
+    // Assuming you want to delete all notes for the user
+    user.notes = [];
+    await user.save();
 
-      res.json({ message: "Note deleted successfully" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal Server Error" });
-    }
+    res.json({ message: "All notes deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
-);
+});
 
 //Get requests from the ItemsCollections
 // Get unique categories
