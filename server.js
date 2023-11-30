@@ -199,19 +199,28 @@ app.put("/notes/:userId/:currentPage", authenticateToken, async (req, res) => {
   }
 });
 
-app.delete("/notes/:userId", authenticateToken, async (req, res) => {
+app.delete("/notes/:username", authenticateToken, async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { username } = req.params;
+    const { noteId } = req.body; // Assuming your frontend sends the note ID
 
-    const user = await UserModel.findById(userId);
+    const user = await UserModel.findOne({ username });
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Assuming you want to delete all notes for the user
-    user.notes = [];
+    // Find the index of the note with the specified ID
+    const noteIndex = user.notes.findIndex((note) => note._id == noteId);
+
+    if (noteIndex === -1) {
+      return res.status(404).json({ message: "Note not found" });
+    }
+
+    // Remove the note at the specified index
+    user.notes.splice(noteIndex, 1);
+
     await user.save();
 
-    res.json({ message: "All notes deleted successfully" });
+    res.json({ message: "Note deleted successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
