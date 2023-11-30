@@ -137,7 +137,7 @@ app.get("/protected", (req, res) => {
 app.post("/notes/:username", async (req, res) => {
   try {
     const { username } = req.params;
-    const { currentPage, note } = req.body;
+    const { note } = req.body; // Remove currentPage from destructuring
 
     const user = await UserModel.findOne({ username });
 
@@ -146,7 +146,8 @@ app.post("/notes/:username", async (req, res) => {
     }
 
     // Assuming user.notes is an array field in the user schema to store notes
-    user.notes.push({ page: currentPage, content: note });
+    // Assuming you want to add a note without specifying a page
+    user.notes.push({ content: note });
     await user.save();
 
     res.status(201).json({ message: "Note created successfully" });
@@ -155,6 +156,7 @@ app.post("/notes/:username", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 app.get("/notes/:username/:currentPage", async (req, res) => {
   try {
     const { username, currentPage } = req.params;
