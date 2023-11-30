@@ -91,7 +91,8 @@ app.post("/login", async (req, res) => {
       expiresIn: "8h",
     });
 
-    return res.json({ token });
+    // Send the token in the "Authorization" header
+    return res.header("Authorization", `Bearer ${token}`).json({ token });
   } catch (error) {
     return res
       .status(500)
