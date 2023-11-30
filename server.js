@@ -157,17 +157,15 @@ app.post("/notes/:username", async (req, res) => {
   }
 });
 
-app.get("/notes/:username/:currentPage", async (req, res) => {
+app.get("/notes/:username", async (req, res) => {
   try {
-    const { username, currentPage } = req.params;
+    const { username } = req.params;
 
-    const user = await UserModel.findById(username);
+    const user = await UserModel.findOne(username);
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const notes = user.notes
-      .filter((n) => n.page === currentPage)
-      .map((n) => n.note);
+    const notes = user.notes.map((n) => n.note);
 
     res.json({ notes });
   } catch (error) {
