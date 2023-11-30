@@ -137,7 +137,7 @@ app.get("/protected", (req, res) => {
 app.post("/notes/:username", async (req, res) => {
   try {
     const { username } = req.params;
-    const { currentPage, note } = req.body;
+    const { note } = req.body;
 
     const user = await UserModel.findOne({ username });
 
@@ -146,7 +146,7 @@ app.post("/notes/:username", async (req, res) => {
     }
 
     // Assuming user.notes is an array field in the user schema to store notes
-    user.notes.push({ page: currentPage, content: note });
+    user.notes.push({ content: note });
     await user.save();
 
     res.status(201).json({ message: "Note created successfully" });
@@ -155,11 +155,11 @@ app.post("/notes/:username", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-app.get("/notes/:userId/:currentPage", authenticateToken, async (req, res) => {
+app.get("/notes/:username/:currentPage", async (req, res) => {
   try {
-    const { userId, currentPage } = req.params;
+    const { username, currentPage } = req.params;
 
-    const user = await UserModel.findById(userId);
+    const user = await UserModel.findById(username);
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
