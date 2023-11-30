@@ -134,14 +134,16 @@ app.get("/protected", (req, res) => {
 });
 
 //Allow users to take notes
-app.post("/notes/:userId/:currentPage", async (req, res) => {
+app.post("/notes/:username/:currentPage", async (req, res) => {
   try {
-    const { userId, currentPage } = req.params;
+    const { username, currentPage } = req.params;
     const { note } = req.body;
 
-    const user = await UserModel.findById(userId);
+    const user = await UserModel.findOne({ username });
 
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     // Assuming user.notes is an array field in the user schema to store notes
     user.notes.push({ page: currentPage, note });
