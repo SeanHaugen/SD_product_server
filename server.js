@@ -167,7 +167,7 @@ app.get("/notes/:username", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const notes = user.notes.map((n) => n.note);
+    const notes = user.notes.map((note) => note.content);
 
     res.json({ notes });
   } catch (error) {
