@@ -137,7 +137,7 @@ app.get("/protected", (req, res) => {
 app.post("/notes/:username", async (req, res) => {
   try {
     const { username } = req.params;
-    const { note } = req.body;
+    const { currentPage, note } = req.body;
 
     const user = await UserModel.findOne({ username });
 
@@ -146,7 +146,7 @@ app.post("/notes/:username", async (req, res) => {
     }
 
     // Assuming user.notes is an array field in the user schema to store notes
-    user.notes.push({ content: note });
+    user.notes.push({ page: currentPage, content: note });
     await user.save();
 
     res.status(201).json({ message: "Note created successfully" });
