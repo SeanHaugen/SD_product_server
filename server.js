@@ -137,6 +137,8 @@ app.get("/protected", (req, res) => {
 app.post("/notes/:username/:currentPage", async (req, res) => {
   try {
     const { username, currentPage } = req.params;
+    console.log("Received username:", username);
+    console.log("Received currentPage:", currentPage);
     const { note } = req.body;
 
     const user = await UserModel.findOne({ username });
