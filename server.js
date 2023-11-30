@@ -100,11 +100,6 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Example protected route
-app.get("/protected", authenticateToken, (req, res) => {
-  res.json({ message: "This is a protected route." });
-});
-
 // Middleware to authenticate token
 function authenticateToken(req, res, next) {
   const token = req.header("Authorization");
@@ -123,6 +118,11 @@ function authenticateToken(req, res, next) {
     next();
   });
 }
+
+// Example protected route
+app.get("/protected", authenticateToken, (req, res) => {
+  res.json({ message: "This is a protected route." });
+});
 
 //Allow users to take notes
 app.post("/notes/:userId/:currentPage", authenticateToken, async (req, res) => {
