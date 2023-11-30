@@ -36,24 +36,15 @@ db.once("open", () => console.log("Connected to MongoDB"));
 
 /////////////////////////////////////////
 //user authentication
+// Secret key for JWT
+const secretKey = "your_secret_key";
 
-const authenticateToken = (req, res, next) => {
-  const token = req.header("Authorization");
-  if (!token) return res.status(401).send("Access denied");
-
-  jwt.verify(token, secretKey, (err, user) => {
-    if (err) return res.status(403).send("Invalid token");
-    req.user = user;
-    next();
-  });
-};
-
+// Register route
 app.post("/register", async (req, res) => {
   try {
-    console.log("Received a registration request");
     const { username, password } = req.body;
 
-    // Validate user data (you can add more validation)
+    // Validate user data
     if (!username || !password) {
       return res
         .status(400)
@@ -76,13 +67,12 @@ app.post("/register", async (req, res) => {
   }
 });
 
-const secretKey = process.env.SECRET_KEY || "default-secret-key";
-
+// Login route
 app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Find the user by email
+    // Find the user by username
     const user = await UserModel.findOne({ username });
 
     if (!user) {
@@ -108,6 +98,23 @@ app.post("/login", async (req, res) => {
       .json({ error: "Login failed. Please try again later." });
   }
 });
+
+// Example protected route
+app.get("/protected", authenticateToken, (req, res) => {
+  res.json({ message: "This is a protected route." });
+});
+
+// Middleware to authenticate token
+function authenticateToken(req, res, next) {
+  const token = req.header("Authorization");
+  if (!token) return res.status(401).send("Access denied");
+
+  jwt.verify(token, secretKey, (err, user) => {
+    if (err) return res.status(403).send("Invalid token");
+    req.user = user;
+    next();
+  });
+}
 
 //Allow users to take notes
 app.post("/notes/:userId/:currentPage", authenticateToken, async (req, res) => {
