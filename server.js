@@ -39,6 +39,25 @@ db.once("open", () => console.log("Connected to MongoDB"));
 // Secret key for JWT
 const secretKey = "w3jRWpyq";
 
+// Middleware to authenticate token
+function authenticateToken(req, res, next) {
+  const token = req.header("Authorization");
+  if (!token) {
+    console.error("No token provided");
+    return res.status(401).send("Access denied");
+  }
+
+  jwt.verify(token, secretKey, (err, user) => {
+    if (err) {
+      console.error("Token verification error:", err.message);
+      return res.status(403).send("Invalid token");
+    }
+
+    req.user = user;
+    next();
+  });
+}
+
 // Register route
 app.post("/register", async (req, res) => {
   try {
@@ -99,25 +118,6 @@ app.post("/login", async (req, res) => {
       .json({ error: "Login failed. Please try again later." });
   }
 });
-
-// Middleware to authenticate token
-function authenticateToken(req, res, next) {
-  const token = req.header("Authorization");
-  if (!token) {
-    console.error("No token provided");
-    return res.status(401).send("Access denied");
-  }
-
-  jwt.verify(token, secretKey, (err, user) => {
-    if (err) {
-      console.error("Token verification error:", err.message);
-      return res.status(403).send("Invalid token");
-    }
-
-    req.user = user;
-    next();
-  });
-}
 
 // Example protected route
 app.get("/protected", authenticateToken, (req, res) => {
