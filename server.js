@@ -37,7 +37,7 @@ db.once("open", () => console.log("Connected to MongoDB"));
 /////////////////////////////////////////
 //user authentication
 // Secret key for JWT
-const secretKey = "your_secret_key";
+const secretKey = process.env.SECRET_KEY || "default-secret-key";
 
 // Register route
 app.post("/register", async (req, res) => {
