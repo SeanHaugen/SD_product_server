@@ -202,15 +202,15 @@ app.put("/notes/:userId/:currentPage", authenticateToken, async (req, res) => {
 app.delete("/notes/:username", authenticateToken, async (req, res) => {
   try {
     const { username } = req.params;
-    const { noteContent } = req.body; // Assuming your frontend sends the note ID
+    const { noteContent } = req.body; // Assuming your frontend sends the note content
 
     const user = await UserModel.findOne({ username });
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Find the index of the note with the specified ID
+    // Find the index of the note with the specified content
     const noteIndex = user.notes.findIndex(
-      (note) => note.content == noteContent
+      (note) => note.content === noteContent
     );
 
     if (noteIndex === -1) {
