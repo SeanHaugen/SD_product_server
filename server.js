@@ -37,7 +37,7 @@ db.once("open", () => console.log("Connected to MongoDB"));
 /////////////////////////////////////////
 //user authentication
 // Secret key for JWT
-const secretKey = "w3jRWpyq";
+const secretKey = process.env.SECRET_KEY || "w3jRWpyq";
 
 // Middleware to authenticate token
 function authenticateToken(req, res, next) {
