@@ -125,7 +125,7 @@ app.post("/login", async (req, res) => {
 });
 
 // Example protected route
-app.get("/protected", authenticateToken, (req, res) => {
+app.get("/protected", (req, res) => {
   console.log(
     "Received token in protected route:",
     req.header("Authorization")
@@ -134,7 +134,7 @@ app.get("/protected", authenticateToken, (req, res) => {
 });
 
 //Allow users to take notes
-app.post("/notes/:userId/:currentPage", authenticateToken, async (req, res) => {
+app.post("/notes/:userId/:currentPage", async (req, res) => {
   try {
     const { userId, currentPage } = req.params;
     const { note } = req.body;
