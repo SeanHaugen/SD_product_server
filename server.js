@@ -37,6 +37,17 @@ db.once("open", () => console.log("Connected to MongoDB"));
 /////////////////////////////////////////
 //user authentication
 
+const authenticateToken = (req, res, next) => {
+  const token = req.header("Authorization");
+  if (!token) return res.status(401).send("Access denied");
+
+  jwt.verify(token, secretKey, (err, user) => {
+    if (err) return res.status(403).send("Invalid token");
+    req.user = user;
+    next();
+  });
+};
+
 app.post("/register", async (req, res) => {
   try {
     console.log("Received a registration request");
@@ -97,6 +108,91 @@ app.post("/login", async (req, res) => {
       .json({ error: "Login failed. Please try again later." });
   }
 });
+
+//Allow users to take notes
+app.post("/notes/:userId/:currentPage", authenticateToken, async (req, res) => {
+  try {
+    const { userId, currentPage } = req.params;
+    const { note } = req.body;
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Assuming user.notes is an array field in the user schema to store notes
+    user.notes.push({ page: currentPage, note });
+    await user.save();
+
+    res.status(201).json({ message: "Note created successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+app.get("/notes/:userId/:currentPage", authenticateToken, async (req, res) => {
+  try {
+    const { userId, currentPage } = req.params;
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const notes = user.notes
+      .filter((n) => n.page === currentPage)
+      .map((n) => n.note);
+
+    res.json({ notes });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+app.put("/notes/:userId/:currentPage", authenticateToken, async (req, res) => {
+  try {
+    const { userId, currentPage } = req.params;
+    const { note } = req.body;
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const targetNote = user.notes.find((n) => n.page === currentPage);
+
+    if (!targetNote) return res.status(404).json({ message: "Note not found" });
+
+    targetNote.note = note;
+    await user.save();
+
+    res.json({ message: "Note updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+app.delete(
+  "/notes/:userId/:currentPage",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const { userId, currentPage } = req.params;
+
+      const user = await UserModel.findById(userId);
+
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      user.notes = user.notes.filter((n) => !(n.page === currentPage));
+      await user.save();
+
+      res.json({ message: "Note deleted successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+);
 
 //Get requests from the ItemsCollections
 // Get unique categories
