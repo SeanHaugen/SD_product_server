@@ -125,6 +125,10 @@ app.post("/login", async (req, res) => {
 
 // Example protected route
 app.get("/protected", authenticateToken, (req, res) => {
+  console.log(
+    "Received token in protected route:",
+    req.header("Authorization")
+  );
   res.json({ message: "This is a protected route." });
 });
 
