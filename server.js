@@ -161,9 +161,11 @@ app.get("/notes/:username", async (req, res) => {
   try {
     const { username } = req.params;
 
-    const user = await UserModel.findOne(username);
+    const user = await UserModel.findOne({ username });
 
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     const notes = user.notes.map((n) => n.note);
 
