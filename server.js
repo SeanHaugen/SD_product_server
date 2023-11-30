@@ -42,6 +42,7 @@ const secretKey = "w3jRWpyq";
 // Middleware to authenticate token
 function authenticateToken(req, res, next) {
   const token = req.header("Authorization");
+  console.log("received token: ", token);
   if (!token) {
     console.error("No token provided");
     return res.status(401).send("Access denied");
