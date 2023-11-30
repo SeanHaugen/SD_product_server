@@ -134,10 +134,10 @@ app.get("/protected", (req, res) => {
 });
 
 //Allow users to take notes
-app.post("/notes/:username/:currentPage", async (req, res) => {
+app.post("/notes/:username", async (req, res) => {
   try {
-    const { username, currentPage } = req.params;
-    const { note } = req.body;
+    const { username } = req.params;
+    const { currentPage, note } = req.body;
 
     const user = await UserModel.findOne({ username });
 
