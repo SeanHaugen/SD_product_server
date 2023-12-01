@@ -513,32 +513,25 @@ app.get("/promo-items", async (req, res) => {
 //PUT request
 //Edit the description of the item
 app.put("/update/:itemNumber", async (req, res) => {
-  console.log("Received PUT request:", req.body);
-  const itemNumber = req.params.itemNumber;
-
   try {
-    // Find the item by its Item_Number
-    let itemToUpdate = await itemsModel.findOne({ Item_Number: itemNumber });
+    const itemnum = req.params.itemNumber;
+    const newDescription = req.body.newDescription;
 
-    if (!itemToUpdate) {
-      return res.status(404).json({ message: "Item not found" });
+    // Update the item with the new description
+    const updatedItem = await itemsModel.findOneAndUpdate(
+      itemnum,
+      { $set: { Description: newDescription } },
+      { new: true }
+    );
+
+    if (!updatedItem) {
+      return res.status(404).json({ error: "Item not found" });
     }
 
-    if ("Description" in req.body) {
-      // Append the new text to the existing description
-      itemToUpdate.Description += "\n" + req.body.Description;
-    }
-
-    // Save the updated item
-    await itemToUpdate.save();
-
-    return res.status(200).json({ message: "Item updated successfully" });
+    res.json(updatedItem);
   } catch (error) {
-    console.error("Error updating item:", error);
-
-    return res
-      .status(500)
-      .json({ message: "Error updating item", error: error.toString() });
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
