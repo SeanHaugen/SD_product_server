@@ -511,7 +511,7 @@ app.get("/promo-items", async (req, res) => {
 });
 
 //PUT request
-
+//Edit the description of the item
 app.put("/update/:itemNumber", async (req, res) => {
   console.log("Received PUT request:", req.body);
   const itemNumber = req.params.itemNumber;
@@ -523,15 +523,13 @@ app.put("/update/:itemNumber", async (req, res) => {
     if (!itemToUpdate) {
       return res.status(404).json({ message: "Item not found" });
     }
-    if ("Description" in req.body)
-      itemToUpdate.Description += " " + req.body.Description;
-    if ("Materials" in req.body)
-      itemToUpdate.Materials += " " + req.body.Materials;
-    if ("Package_Weight" in req.body)
-      itemToUpdate.Package_Weight += " " + req.body.Package_Weight;
-    if ("Imprint_Method" in req.body)
-      itemToUpdate.Imprint_Method += " " + req.body.Imprint_Method;
 
+    if ("Description" in req.body) {
+      // Concatenate existing description with new lines
+      itemToUpdate.Description += "\n" + req.body.Description;
+    }
+
+    // Save the updated item
     await itemToUpdate.save();
 
     return res.status(200).json({ message: "Item updated successfully" });
