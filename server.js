@@ -519,7 +519,7 @@ app.put("/update/:itemNumber", async (req, res) => {
 
     // Update the item with the new description
     const updatedItem = await itemsModel.findOneAndUpdate(
-      itemnum,
+      { Item_Number: itemnum }, // Corrected line
       { $set: { Description: newDescription } },
       { new: true }
     );
