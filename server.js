@@ -525,8 +525,8 @@ app.put("/update/:itemNumber", async (req, res) => {
     }
 
     if ("Description" in req.body) {
-      // Update the description field with the new value
-      itemToUpdate.Description = req.body.Description;
+      // Append the new text to the existing description
+      itemToUpdate.Description += "\n" + req.body.Description;
     }
 
     // Save the updated item
