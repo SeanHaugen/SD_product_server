@@ -518,7 +518,7 @@ app.put("/update/:itemNumber", async (req, res) => {
 
   try {
     // Find the item by its Item_Number
-    let itemToUpdate = await items.findOne({ Item_Number: itemNumber });
+    let itemToUpdate = await itemsModel.findOne({ Item_Number: itemNumber });
 
     if (!itemToUpdate) {
       return res.status(404).json({ message: "Item not found" });
