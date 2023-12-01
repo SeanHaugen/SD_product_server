@@ -538,7 +538,7 @@ app.put("/update/:itemNumber", async (req, res) => {
 
     return res
       .status(500)
-      .json({ message: "Error updating item", error: error.message });
+      .json({ message: "Error updating item", error: error.toString() });
   }
 });
 
