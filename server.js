@@ -683,21 +683,12 @@ app.delete("/removeAdditionalInfo/:item", async (req, res) => {
 /////////////////////////////////////////
 //requests for New Items
 
-app.get("/get-newItem/:itemnum", async (req, res) => {
+app.get("/get-newItem/", async (req, res) => {
   try {
-    const itemId = req.params.itemnum;
-    const item = await itemsModel.findOne({ Item_Number: itemId });
-
-    if (!item) {
-      return res.status(404).json({ message: "Item not found" });
-    }
-
-    const newItemState = item.New_Item;
-
-    return res.status(200).json({ New_Item: newItemState });
+    const newItem = await itemsModel.find({ New_Item: true });
+    res.json(newItem);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
