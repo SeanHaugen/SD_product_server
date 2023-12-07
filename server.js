@@ -683,7 +683,7 @@ app.delete("/removeAdditionalInfo/:item", async (req, res) => {
 /////////////////////////////////////////
 //requests for New Items
 
-app.get("/get-newItem/", async (req, res) => {
+app.get("/get-newItem", async (req, res) => {
   try {
     const newItem = await itemsModel.find({ New_Item: true });
     res.json(newItem);
