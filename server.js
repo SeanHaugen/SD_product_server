@@ -681,7 +681,28 @@ app.delete("/removeAdditionalInfo/:item", async (req, res) => {
 });
 
 /////////////////////////////////////////
-//Put requests for details
+//Put requests for New Items
+
+app.put("/toggle-newItem/:itemnum", async (req, res) => {
+  try {
+    const itemId = req.params.itemnum;
+    const item = await itemsModel.findOne({ Item_Number: itemId });
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    item.New_Item = !item.New_Item;
+
+    // Save the updated document
+    const updatedItem = await item.save();
+
+    return res.status(200).json(updatedItem);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
 ////////////////////////////////////////
 //requests for OOS/low inventory

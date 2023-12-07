@@ -27,13 +27,14 @@ const itemSchema = new mongoose.Schema({
   Origin: String,
   Warranty: String,
   Product_Status: String,
-  additional_info: String,
+  additional_info: Array,
   OOS: Boolean,
   Low_Stock: Boolean,
   Date: Date,
   Alt: Array,
   Promo: Boolean,
   RelatedItems: String,
+  New_Item: Boolean,
 });
 
 const itemsModel = mongoose.model("items", itemSchema);
