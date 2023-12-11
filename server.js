@@ -905,9 +905,9 @@ app.put("/update-date/:itemnum", async (req, res) => {
 //add alternative item options to list
 app.put("/add-alt-item/:itemnum", async (req, res) => {
   const itemId = req.params.itemnum;
-  const newAltString = req.body.newAltString; // Assuming you send the newAltString in the request body
+  const newAltString = req.body.Alt;
 
-  console.log("Request Body:", req.body);
+  console.log("Received Request Body:", req.body);
   console.log("itemId:", itemId);
   console.log("newAltString:", newAltString);
 
