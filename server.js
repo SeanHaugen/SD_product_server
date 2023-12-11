@@ -912,21 +912,14 @@ app.put("/add-alt-item/:itemnum", async (req, res) => {
   console.log("newAltString:", newAltString);
 
   try {
-    // Find the item by ID
-    const item = await itemsModel.findOne({ Item_Number: itemId });
-
-    if (!item) {
-      return res.status(404).json({ message: "Item not found" });
-    }
-
-    // Add the newAltString to the "Alt" array
-    item.Alt.push(newAltString);
-
-    // Save the updated item
-    await item.updateOne({ $set: { Alt: item.Alt } });
+    await itemsModel.updateOne(
+      { Item_Number: itemId },
+      { $push: { Alt: newAltString } }
+    );
 
     return res.status(200).json({ message: "Alt string added successfully" });
   } catch (error) {
+    console.error("Error:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
