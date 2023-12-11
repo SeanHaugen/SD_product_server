@@ -615,20 +615,20 @@ app.put("/additionalInfoEdit/:item", async (req, res) => {
     // Check if "additional_info" field exists in the item
     if (!item.additional_info) {
       // If it doesn't exist, create the field with the new value
-      item.additional_info = newAdditionalInfo;
+      item.additional_info = [newAdditionalInfo];
     } else {
-      // If it exists, append the new value to the existing value
-      item.additional_info += "\n" + newAdditionalInfo; // You can choose a delimiter, like a newline, to separate values
+      // If it exists, append the new value to the existing array
+      item.additional_info.push(newAdditionalInfo);
     }
 
     // Save the updated document
     await item.save();
     res.status(200).json({ message: "Additional info updated successfully" });
   } catch (error) {
-    console.error("Error adding document", error);
+    console.error("Error updating document", error);
     res
       .status(500)
-      .json({ message: "Could not add document", error: error.message });
+      .json({ message: "Could not update document", error: error.message });
   }
 });
 
