@@ -907,6 +907,10 @@ app.put("/add-alt-item/:itemnum", async (req, res) => {
   const itemId = req.params.itemnum;
   const newAltString = req.body.newAltString; // Assuming you send the newAltString in the request body
 
+  console.log("Request Body:", req.body);
+  console.log("itemId:", itemId);
+  console.log("newAltString:", newAltString);
+
   try {
     // Find the item by ID
     const item = await itemsModel.findOne({ Item_Number: itemId });
@@ -919,7 +923,7 @@ app.put("/add-alt-item/:itemnum", async (req, res) => {
     item.Alt.push(newAltString);
 
     // Save the updated item
-    await item.save();
+    await item.updateOne({ $set: { Alt: item.Alt } });
 
     return res.status(200).json({ message: "Alt string added successfully" });
   } catch (error) {
