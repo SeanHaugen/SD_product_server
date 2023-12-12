@@ -35,6 +35,7 @@ const itemSchema = new mongoose.Schema({
   Promo: Boolean,
   RelatedItems: String,
   New_Item: Boolean,
+  Outdoor: Boolean,
 });
 
 const itemsModel = mongoose.model("items", itemSchema);
