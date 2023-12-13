@@ -315,10 +315,6 @@ app.get("/items", async (req, res) => {
   }
 });
 
-const escapeRegex = (text) => {
-  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-};
-
 app.get("/search", async (req, res) => {
   const searchQuery = req.query.q;
 
@@ -329,25 +325,25 @@ app.get("/search", async (req, res) => {
     if (!isNaN(numericQuery)) {
       results = await itemsModel.find({ Item_Number: numericQuery });
     } else {
-      const regex = new RegExp(escapeRegex(searchQuery), "i");
-      results = await itemsModel.find({ Item_Name: regex }).sort({
-        /* Your sorting criteria here */
-      });
+      results = await itemsModel
+        .find(
+          {
+            $text: { $search: searchQuery },
+          },
+          {
+            score: { $meta: "textScore" },
+          }
+        )
+        .sort({ score: { $meta: "textScore" } });
     }
-
     res.json(results);
   } catch (error) {
-    console.log("Error searching database", error);
+    console.log("Error searching database");
     res
       .status(500)
       .json({ error: "An error occurred while searching the database." });
   }
 });
-
-// Function to escape special characters in the search query
-// const escapeRegex = (text) => {
-//   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-// };
 
 app.get("/pricing/:criteria/:item", async (req, res) => {
   try {
