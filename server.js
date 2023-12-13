@@ -325,23 +325,16 @@ app.get("/search", async (req, res) => {
     if (!isNaN(numericQuery)) {
       results = await itemsModel.find({ Item_Number: numericQuery });
     } else {
-      const escapedSearchQuery = searchQuery.replace(
-        /[-/\\^$*+?.()|[\]{}]/g,
-        "\\$&"
-      );
-      const regex = new RegExp(escapedSearchQuery, "i"); // 'i' for case-insensitive search
-
       results = await itemsModel
-        .find({
-          // Using a regular expression search instead of $text
-          $or: [
-            { Item_Name: { $regex: regex } },
-            // Add more fields as needed
-          ],
-        })
-        .sort({
-          /* Add your sorting criteria here if needed */
-        });
+        .find(
+          {
+            $text: { $search: searchQuery },
+          },
+          {
+            score: { $meta: "textScore" },
+          }
+        )
+        .sort({ score: { $meta: "textScore" } });
     }
     res.json(results);
   } catch (error) {
