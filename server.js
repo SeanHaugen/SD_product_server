@@ -265,15 +265,6 @@ app.get("/SubCategory", async (req, res) => {
   res.send(allItems);
 });
 
-app.get("/items/oos", async (req, res) => {
-  try {
-    const oosItems = await itemsModel.find({ OOS: true });
-    res.json(oosItems);
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
 //get the item
 app.get("/subCategory/:items", async (req, res) => {
   const productCategory = req.params.items;
@@ -494,19 +485,6 @@ app.get("/document/:pattern", async (req, res) => {
     res.json({ documents });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-app.get("/promo-items", async (req, res) => {
-  try {
-    // Fetch promo items from the database
-    const promoItems = await promoItemModel.find();
-
-    // Respond with the fetched promo items
-    res.json(promoItems);
-  } catch (error) {
-    // Handle any errors that occur during the database query
-    res.status(500).json({ error: "Failed to fetch promo items" });
   }
 });
 
@@ -746,6 +724,24 @@ app.put("/toggle-outdoorItem/:itemnum", async (req, res) => {
 
 ////////////////////////////////////////
 //requests for OOS/low inventory
+
+app.get("/items/oos", async (req, res) => {
+  try {
+    const oosItems = await itemsModel.find({ OOS: true });
+    res.json(oosItems);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/items/lowStock", async (req, res) => {
+  try {
+    const oosItems = await itemsModel.find({ Low_Stock: true });
+    res.json(oosItems);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 app.get("/get-oos/:item_number", async (req, res) => {
   try {
@@ -1014,7 +1010,50 @@ app.delete("/delete-date/:itemnum", async (req, res) => {
 
 //Requests for adding related items to an item
 
-//Add new items, add items to lists
+//Add Promo, add items to lists
+
+app.get("/get-promo", async (req, res) => {
+  try {
+    const newItem = await itemsModel.find({ Promo: true });
+    res.json(newItem);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.put("/toggle-promo/:itemnum", async (req, res) => {
+  try {
+    const itemId = req.params.itemnum;
+    const item = await itemsModel.findOne({ Item_Number: itemId });
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    item.Promo = !item.Promo;
+
+    // Save the updated document
+    const updatedItem = await item.save();
+
+    return res.status(200).json(updatedItem);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+app.get("/promo-items", async (req, res) => {
+  try {
+    // Fetch promo items from the database
+    const promoItems = await promoItemModel.find();
+
+    // Respond with the fetched promo items
+    res.json(promoItems);
+  } catch (error) {
+    // Handle any errors that occur during the database query
+    res.status(500).json({ error: "Failed to fetch promo items" });
+  }
+});
 
 app.post("/add/promo-items/:itemNum", async (req, res) => {
   try {
@@ -1051,6 +1090,8 @@ app.delete("/delete/promo-item/:itemId", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+//pricing and add item
 
 app.post("/add", async (req, res) => {
   try {
