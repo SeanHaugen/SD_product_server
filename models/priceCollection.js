@@ -3,7 +3,7 @@ const PricingSchema = new mongoose.Schema({
   Name: String,
   Item_Number: String,
   Promo: Boolean,
-  Pricing: [
+  Pricing_Table: [
     [mongoose.Schema.Types.Mixed], // Use mongoose.Schema.Types.Mixed for the inner arrays
     [mongoose.Schema.Types.Mixed],
   ],
