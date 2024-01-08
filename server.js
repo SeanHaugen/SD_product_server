@@ -368,12 +368,12 @@ app.get("/pricing/:criteria/:item", async (req, res) => {
     // });
 
     console.log("Query:", query);
-    console.log("Pricing Document:", pricingDoc);
+    console.log("Pricing Document:", pricingDoc.Pricing);
     if (!pricingDoc) {
       return res.status(404).json({ message: "Pricing not found" });
     }
 
-    const pricingArrays = pricingDoc.Pricing_Table || []; // Extract the Pricing arrays
+    const pricingArrays = pricingDoc.Pricing || []; // Extract the Pricing arrays
     res.json(pricingArrays);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
