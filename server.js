@@ -345,7 +345,7 @@ app.get("/search", async (req, res) => {
   }
 });
 
-app.get("/pricing/:criteria/:item", async (req, res) => {
+app.get("/pricing/item_number/:item", async (req, res) => {
   try {
     const criteria = req.params.criteria;
     const itemValue = req.params.item;

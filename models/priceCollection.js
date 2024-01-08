@@ -13,6 +13,6 @@ const PricingSchema = new mongoose.Schema({
   ],
 });
 
-const PricingModel = mongoose.model("itempricing", PricingSchema);
+const PricingModel = mongoose.model("itempricings", PricingSchema);
 
 module.exports = PricingModel;
