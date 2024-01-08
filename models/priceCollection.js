@@ -8,8 +8,8 @@ const PricingSchema = new mongoose.Schema({
   Item_Number: String,
   Promo: Boolean,
   Pricing: [
-    [mongoose.Schema.Types.Mixed], // Use mongoose.Schema.Types.Mixed for the inner arrays
-    [mongoose.Schema.Types.Mixed],
+    mongoose.Schema.Types.Mixed, // Use mongoose.Schema.Types.Mixed for the inner arrays
+    mongoose.Schema.Types.Mixed,
   ],
 });
 

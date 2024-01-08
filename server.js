@@ -371,8 +371,7 @@ app.get("/pricing/:criteria/:item", async (req, res) => {
       return res.status(404).json({ message: "Pricing not found" });
     }
 
-    const pricingArrays = pricingDoc.Pricing; // Extract the Pricing arrays
-
+    const pricingArrays = pricingDoc.Pricing || []; // Extract the Pricing arrays
     res.json(pricingArrays);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
