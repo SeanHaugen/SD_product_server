@@ -349,7 +349,6 @@ app.get("/pricing/:criteria/:item", async (req, res) => {
   try {
     const criteria = req.params.criteria;
     const itemValue = req.params.item;
-    let query = {};
 
     // Define the query based on the criteria
     if (criteria === "item_number") {
@@ -362,13 +361,13 @@ app.get("/pricing/:criteria/:item", async (req, res) => {
       return res.status(400).json({ message: "Invalid search criteria" });
     }
 
-    const pricingDoc = await PricingModel.findOne(query);
+    const pricingDoc = await PricingModel.findOne({ Item_Number: itemValue });
     // const pricingDoc = await PricingModel.findOne({
     //   Item_Number: pricingItem.trim(), // Trim whitespace including newlines
     // });
 
     console.log("Query:", query);
-    console.log("Pricing Doc:", pricingDoc.Pricing_Table);
+    console.log("Pricing Doc:", pricingDoc.Pricing);
     if (!pricingDoc) {
       return res.status(404).json({ message: "Pricing not found" });
     }
