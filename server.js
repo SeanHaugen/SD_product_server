@@ -345,7 +345,7 @@ app.get("/search", async (req, res) => {
   }
 });
 
-app.get("/pricing/:criteria/:item", async (req, res) => {
+app.get("/pricing/item_number/:item", async (req, res) => {
   try {
     const criteria = req.params.criteria;
     const itemValue = req.params.item;
@@ -841,6 +841,34 @@ app.put("/toggle-oos/:itemnum", async (req, res) => {
     const updatedItem = await item.save();
 
     return res.status(200).json(updatedItem);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+app.put("/toggle-subcategory-oos/:subcategory", async (req, res) => {
+  try {
+    const subcategory = req.params.subcategory;
+
+    // Find all items in the specified subcategory
+    const items = await itemsModel.find({ SubCategory: subcategory });
+
+    if (items.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No items found in the specified subcategory" });
+    }
+
+    // Toggle the "OOS" property for each item
+    items.forEach(async (item) => {
+      item.OOS = !item.OOS;
+      await item.save();
+    });
+
+    return res
+      .status(200)
+      .json({ message: "OOS status toggled for all items in the subcategory" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal Server Error" });
