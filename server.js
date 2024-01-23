@@ -64,7 +64,7 @@ function authenticateToken(req, res, next) {
   next();
 }
 
-app.use("/auth", userController);
+app.use("/", userController);
 
 // Login route
 // app.post("/login", async (req, res) => {
