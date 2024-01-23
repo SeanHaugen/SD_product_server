@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const path = require("path");
 const axios = require("axios");
-const userController = require("./login/register");
 
 const itemsModel = require("./models/itemsCollection");
 const PricingModel = require("./models/priceCollection");
@@ -15,7 +14,7 @@ const InfoModel = require("./models/infoCollection");
 const mediaModel = require("./models/mediaCollection");
 const promoItemModel = require("./models/promoCollection");
 const additionalInfoModel = require("./models/addtionalInfoCollection");
-// const UserModel = require("./models/userCollection");
+const UserModel = require("./models/userCollection");
 
 DATABASE_PASSWORD = "DkD0ml96WSM62TAn";
 DATABASE = `mongodb+srv://seanhaugen560:${DATABASE_PASSWORD}@cluster0.adhrbht.mongodb.net/products?retryWrites=true&w=majority`;
@@ -64,40 +63,65 @@ function authenticateToken(req, res, next) {
   next();
 }
 
-app.use("/", userController);
+// Register route
+app.post("/register", async (req, res) => {
+  try {
+    const { username, password } = req.body;
 
-// Login route
-// app.post("/login", async (req, res) => {
-//   try {
-//     const { username, password } = req.body;
+    // Validate user data
+    if (!username || !password) {
+      return res
+        .status(400)
+        .json({ error: "Please provide all required fields." });
+    }
 
-//     // Find the user by username
-//     const user = await UserModel.findOne({ username });
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-//     if (!user) {
-//       return res.status(401).json({ error: "Invalid credentials." });
-//     }
+    // Create a new user in the database
+    const user = new UserModel({ username, password: hashedPassword });
+    await user.save();
 
-//     // Compare the hashed password
-//     const isPasswordValid = await bcrypt.compare(password, user.password);
+    return res.status(201).json({ message: "User registered successfully." });
+  } catch (error) {
+    console.error("Error during registration:", error.message);
+    return res
+      .status(500)
+      .json({ error: "Registration failed. Please try again later." });
+  }
+});
 
-//     if (!isPasswordValid) {
-//       return res.status(401).json({ error: "Invalid credentials." });
-//     }
+app.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
 
-//     // Generate a JWT
-//     const token = jwt.sign({ userId: user._id }, secretKey, {
-//       expiresIn: "8h",
-//     });
+    // Find the user by username
+    const user = await UserModel.findOne({ username });
 
-//     // Send the token in the "Authorization" header
-//     return res.header("Authorization", `Bearer ${token}`).json({ token });
-//   } catch (error) {
-//     return res
-//       .status(500)
-//       .json({ error: "Login failed. Please try again later." });
-//   }
-// });
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials." });
+    }
+
+    // Compare the hashed password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid credentials." });
+    }
+
+    // Generate a JWT
+    const token = jwt.sign({ userId: user._id }, secretKey, {
+      expiresIn: "8h",
+    });
+
+    // Send the token in the "Authorization" header
+    return res.header("Authorization", `Bearer ${token}`).json({ token });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Login failed. Please try again later." });
+  }
+});
 
 // Example protected route
 app.get("/protected", (req, res) => {
