@@ -64,34 +64,6 @@ function authenticateToken(req, res, next) {
   next();
 }
 
-// Register route
-// app.post("/register", async (req, res) => {
-//   try {
-//     const { username, password } = req.body;
-
-//     // Validate user data
-//     if (!username || !password) {
-//       return res
-//         .status(400)
-//         .json({ error: "Please provide all required fields." });
-//     }
-
-//     // Hash the password
-//     const hashedPassword = await bcrypt.hash(password, 10);
-
-//     // Create a new user in the database
-//     const user = new UserModel({ username, password: hashedPassword });
-//     await user.save();
-
-//     return res.status(201).json({ message: "User registered successfully." });
-//   } catch (error) {
-//     console.error("Error during registration:", error.message);
-//     return res
-//       .status(500)
-//       .json({ error: "Registration failed. Please try again later." });
-//   }
-// });
-
 app.use("/auth", userController);
 
 // Login route
