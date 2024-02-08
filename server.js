@@ -15,25 +15,68 @@ const mediaModel = require("./models/mediaCollection");
 const promoItemModel = require("./models/promoCollection");
 const additionalInfoModel = require("./models/addtionalInfoCollection");
 const UserModel = require("./models/userCollection");
-
-DATABASE_PASSWORD = "DkD0ml96WSM62TAn";
-DATABASE = `mongodb+srv://seanhaugen560:${DATABASE_PASSWORD}@cluster0.adhrbht.mongodb.net/products?retryWrites=true&w=majority`;
+const adherenceModel = require("./dataModels/adherence");
 
 const app = express();
 const port = process.env.PORT || 4000;
 
+// First database connection for products
+const productDBPassword = "DkD0ml96WSM62TAn";
+const productDatabase = `mongodb+srv://seanhaugen560:${productDBPassword}@cluster0.adhrbht.mongodb.net/products`;
+
+// Second database connection for dashboard
+const dashboardDBPassword = "DkD0ml96WSM62TAn";
+const dashboardDatabase = `mongodb+srv://seanhaugen560:${dashboardDBPassword}@cluster0.adhrbht.mongodb.net/dashboard`;
+
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(DATABASE, {
+// mongoose.connect(DATABASE, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
+
+// const db = mongoose.connection;
+// db.on("error", (error) => console.error(`MongoDB connection error: ${error}`));
+// db.once("open", () => console.log("Connected to MongoDB"));
+
+// Connect to the products database
+mongoose.connect(productDatabase, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  dbName: "products",
 });
+const productDB = mongoose.connection;
+productDB.on("error", (error) =>
+  console.error(`Products MongoDB connection error: ${error}`)
+);
+productDB.once("open", () => console.log("Connected to Products MongoDB"));
 
-const db = mongoose.connection;
-db.on("error", (error) => console.error(`MongoDB connection error: ${error}`));
-db.once("open", () => console.log("Connected to MongoDB"));
+// Connect to the dashboard database
+mongoose.createConnection(dashboardDatabase, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  dbName: "dashboard", // Specify the database name here
+});
+const dashboardDB = mongoose.connection;
+dashboardDB.on("error", (error) =>
+  console.error(`Dashboard MongoDB connection error: ${error}`)
+);
 
+app.get("/dashboardData", async (req, res) => {
+  try {
+    const data = await adherenceModel.find(); // Fetch data using the model
+
+    if (!data || data.length === 0) {
+      return res.status(404).send("Data not found");
+    }
+
+    res.send(data);
+  } catch (err) {
+    console.error("Error fetching dashboard data:", err);
+    res.status(500).send("Internal server error");
+  }
+});
 /////////////////////////////////////////
 //user authentication
 // Secret key for JWT
