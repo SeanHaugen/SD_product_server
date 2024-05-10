@@ -3,8 +3,6 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const path = require("path");
-const axios = require("axios");
 
 const itemsModel = require("./models/itemsCollection");
 const PricingModel = require("./models/priceCollection");
@@ -13,7 +11,6 @@ const flatRateModel = require("./models/flatRateCollection");
 const InfoModel = require("./models/infoCollection");
 const mediaModel = require("./models/mediaCollection");
 const promoItemModel = require("./models/promoCollection");
-const additionalInfoModel = require("./models/addtionalInfoCollection");
 const UserModel = require("./models/userCollection");
 const adherenceModel = require("./dataModels/adherence");
 
@@ -24,21 +21,8 @@ const port = process.env.PORT || 4000;
 const productDBPassword = "DkD0ml96WSM62TAn";
 const productDatabase = `mongodb+srv://seanhaugen560:${productDBPassword}@cluster0.adhrbht.mongodb.net/products`;
 
-// Second database connection for dashboard
-const dashboardDBPassword = "DkD0ml96WSM62TAn";
-const dashboardDatabase = `mongodb+srv://seanhaugen560:${dashboardDBPassword}@cluster0.adhrbht.mongodb.net/dashboard`;
-
 app.use(cors());
 app.use(express.json());
-
-// mongoose.connect(DATABASE, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// });
-
-// const db = mongoose.connection;
-// db.on("error", (error) => console.error(`MongoDB connection error: ${error}`));
-// db.once("open", () => console.log("Connected to MongoDB"));
 
 // Connect to the products database
 mongoose.connect(productDatabase, {
@@ -93,16 +77,6 @@ function authenticateToken(req, res, next) {
     console.error("No token provided");
     // return res.status(401).send("Access denied");
   }
-
-  // jwt.verify(token, secretKey, (err, user) => {
-  //   if (err) {
-  //     console.error("Token verification error:", err.message);
-  //     return res.status(403).send("Invalid token");
-  //   }
-
-  //   req.user = user;
-
-  // });
   next();
 }
 
